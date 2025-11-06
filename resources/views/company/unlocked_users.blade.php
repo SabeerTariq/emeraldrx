@@ -3,16 +3,13 @@
 @section('content') 
 
 <!-- Header start --> 
-
+@php
+$isDashboardPage = (Auth::check() || Auth::guard('company')->check());
+@endphp
+@if($isDashboardPage === false)
 @include('includes.header') 
-
-<!-- Header end --> 
-
-<!-- Inner Page Title start --> 
-
-@include('includes.inner_page_title', ['page_title'=>__('Unlocked Seekers')]) 
-
-<!-- Inner Page Title end -->
+@endif
+<!-- Header end -->
 
 <div class="listpgWraper">
 
@@ -21,10 +18,8 @@
         <div class="row">
 
             @include('includes.company_dashboard_menu')
-
-
-
-            <div class="col-md-9 col-sm-8"> 
+            <div class="col-md-9 col-sm-8">
+                @include('includes.dashboard_content_header') 
 
                 <div class="myads">
 
@@ -86,6 +81,8 @@
 
 </div>
 
+@if($isDashboardPage === false)
 @include('includes.footer')
+@endif
 
 @endsection

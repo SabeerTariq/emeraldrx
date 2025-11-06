@@ -1,10 +1,16 @@
 @extends('layouts.app')
 @section('content') 
 <!-- Header start --> 
+@php
+$isDashboardPage = (Auth::check() || Auth::guard('company')->check());
+@endphp
+@if($isDashboardPage === false)
 @include('includes.header') 
+@endif
 <!-- Header end --> 
 <!-- Inner Page Title start --> 
-<div class="pageSearch pt-md-5 pb-md-5">
+{{-- Hidden: Welcome to Your Candidate Dashboard section --}}
+<div class="pageSearch pt-md-5 pb-md-5" style="display: none;">
 <form action="{{route('job.list')}}" method="get">
 	<!-- Page Title start -->
 	<div class="container">
@@ -28,6 +34,7 @@
     <div class="container">@include('flash::message')
         <div class="row"> @include('includes.user_dashboard_menu')
             <div class="col-lg-9">
+                @include('includes.dashboard_content_header')
             @if(count(auth()->user()->getProfileProjectsArray())==0 || count(auth()->user()->getProfileCvsArray())==0 || count(auth()->user()->profileExperience()->get()) == 0 || count(auth()->user()->profileEducation()->get()) == 0 || count(auth()->user()->profileSkills()->get()) == 0)
 				<div class="userprofilealert"><h5><i class="fas fa-exclamation-triangle"></i> Your Resume is incomplete please update.</h5>
 				<div class="editbtbn"><a href="{{ route('build.resume') }}"><i class="fas fa-user-edit"></i> Complete CV </a></div>	</div>
@@ -222,7 +229,9 @@
         </div>
     </div>
 </div>
+@if(!$isDashboardPage)
 @include('includes.footer')
+@endif
 @endsection
 @push('scripts')
 @include('includes.immediate_available_btn')

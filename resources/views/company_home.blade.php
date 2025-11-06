@@ -3,16 +3,13 @@
 @section('content') 
 
 <!-- Header start --> 
-
+@php
+$isDashboardPage = (Auth::check() || Auth::guard('company')->check());
+@endphp
+@if($isDashboardPage === false)
 @include('includes.header') 
-
-<!-- Header end --> 
-
-<!-- Inner Page Title start --> 
-
-@include('includes.inner_page_title', ['page_title'=>__('Welcome to Employer Dashboard')]) 
-
-<!-- Inner Page Title end -->
+@endif
+<!-- Header end -->
 
 <div class="listpgWraper">
 
@@ -21,7 +18,8 @@
         <div class="row"> @include('includes.company_dashboard_menu')
         <?php $company = auth()->guard('company')->user(); ?>
 
-        <div class="col-md-9 col-sm-8"> 
+        <div class="col-md-9 col-sm-8">
+            @include('includes.dashboard_content_header') 
             <?php if ($company->is_active == 1 && (($company->package_end_date === null) || 
                 (\Carbon\Carbon::parse($company->package_end_date)->lt(\Carbon\Carbon::now())) || 
                 ($company->jobs_quota <= $company->availed_jobs_quota))) { ?>    
@@ -271,7 +269,9 @@
 
 
 
+@if($isDashboardPage === false)
 @include('includes.footer')
+@endif
 
 @endsection
 

@@ -1,4 +1,10 @@
 <div class="col-lg-3">
+	<!-- Dashboard Sidebar Logo -->
+	<div class="dashboard-sidebar-logo">
+		<a href="{{url('/')}}" class="logo">
+			<img src="{{ asset('/') }}sitesetting_images/thumb/{{ $siteSetting->site_logo }}" alt="{{ $siteSetting->site_name }}" />
+		</a>
+	</div>
 
  <!-- Featured Profile Package -->
  <?php 
@@ -81,18 +87,6 @@
 
 
 	<div class="usernavwrap">
-    <div class="switchbox">
-        <div class="txtlbl">{{__('Open to Work')}} <i class="fas fa-question-circle" title="{{__('Are you immediate available')}}?"></i>
-        </div> 
-        <div class="">
-            <label class="switch switch-green"> @php
-                $checked = ((bool)Auth::user()->is_immediate_available)? 'checked="checked"':'';
-                @endphp
-                <input type="checkbox" name="is_immediate_available" id="is_immediate_available" class="switch-input" {{$checked}} onchange="changeImmediateAvailableStatus({{Auth::user()->id}}, {{Auth::user()->is_immediate_available}});">
-                <span class="switch-label" data-on="Yes" data-off="No"></span> <span class="switch-handle"></span> </label>
-        </div>
-        <div class="clearfix"></div>
-    </div>
     <ul class="usernavdash">
         <li class="{{ Request::url() == route('home') ? 'active' : '' }}"><a href="{{route('home')}}"><i class="fas fa-tachometer" aria-hidden="true"></i> {{__('Dashboard')}}</a>
         </li>
@@ -119,8 +113,8 @@
         </li>
         <li class="{{ Request::url() == route('my.followings') ? 'active' : '' }}"><a href="{{route('my.followings')}}"><i class="fas fa-user" aria-hidden="true"></i> {{__('My Followings')}}</a>
         <li class="{{ Request::url() == route('build.resume') ? 'active' : '' }}"><a href="{{ route('build.resume') }}"><i class="fas fa-file" aria-hidden="true"></i> {{ __('Build Resume') }}</a></li>
-        <li><a href="{{url('my-profile#cvs')}}"><i class="fas fa-file" aria-hidden="true"></i> {{__('Manage Resume')}}</a>
-        </li>
+        <!-- <li><a href="{{url('my-profile#cvs')}}"><i class="fas fa-file" aria-hidden="true"></i> {{__('Manage Resume')}}</a>
+        </li> -->
         <li><a href="{{ route('resume', Auth::user()->id) }}"><i class="fa fa-print" aria-hidden="true"></i> {{__('Download CV')}}</a></li>
         
 
@@ -131,6 +125,18 @@
             </form>
         </li>
     </ul>
+    <div class="switchbox">
+        <div class="txtlbl">{{__('Open to Work')}} <i class="fas fa-question-circle" title="{{__('Are you immediate available')}}?"></i>
+        </div> 
+        <div class="">
+            <label class="switch switch-green"> @php
+                $checked = ((bool)Auth::user()->is_immediate_available)? 'checked="checked"':'';
+                @endphp
+                <input type="checkbox" name="is_immediate_available" id="is_immediate_available" class="switch-input" {{$checked}} onchange="changeImmediateAvailableStatus({{Auth::user()->id}}, {{Auth::user()->is_immediate_available}});">
+                <span class="switch-label" data-on="Yes" data-off="No"></span> <span class="switch-handle"></span> </label>
+        </div>
+        <div class="clearfix"></div>
+    </div>
 		</div>
    
 		

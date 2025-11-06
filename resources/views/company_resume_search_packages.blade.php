@@ -1,17 +1,20 @@
 @extends('layouts.app')
 @section('content')
 <!-- Header start -->
+@php
+$isDashboardPage = (Auth::check() || Auth::guard('company')->check());
+@endphp
+@if($isDashboardPage === false)
 @include('includes.header')
+@endif
 <!-- Header end -->
-<!-- Inner Page Title start -->
-@include('includes.inner_page_title', ['page_title'=>__('Cvs Search Packages')])
-<!-- Inner Page Title end -->
 <?php $company = Auth::guard('company')->user(); ?>
 
 <div class="listpgWraper">
     <div class="container">@include('flash::message')
         <div class="row"> @include('includes.company_dashboard_menu')
             <div class="col-md-9 col-sm-8">
+                @include('includes.dashboard_content_header')
                 @if(null!==($success_package) && !empty($success_package))
                 <div class="instoretxt">
 
@@ -177,7 +180,9 @@
         </div>
     </div>
 </div>
+@if($isDashboardPage === false)
 @include('includes.footer')
+@endif
 @endsection
 @push('scripts')
 @include('includes.immediate_available_btn')

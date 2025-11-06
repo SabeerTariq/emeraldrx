@@ -19,12 +19,16 @@ class ComposerServiceProvider extends ServiceProvider
         $show_in_top_menu = Cms::where('show_in_top_menu', 1)->get();
         $show_in_footer_menu = Cms::where('show_in_footer_menu', 1)->get();
         /*         * *********************************** */
+        // Check if this is a dashboard page (all dashboard pages require authentication)
+        $isDashboardPage = (auth()->check() || auth('company')->check());
+        
         View::share(
                 [
                     'siteLanguages' => $siteLanguages,
                     'siteSetting' => $siteSetting,
                     'show_in_top_menu' => $show_in_top_menu,
-                    'show_in_footer_menu' => $show_in_footer_menu
+                    'show_in_footer_menu' => $show_in_footer_menu,
+                    'isDashboardPage' => $isDashboardPage
                 ]
         );
     }

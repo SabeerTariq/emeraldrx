@@ -1,4 +1,11 @@
 <div class="col-lg-3">
+	<!-- Dashboard Sidebar Logo -->
+	<div class="dashboard-sidebar-logo">
+		<a href="{{url('/')}}" class="logo">
+			<img src="{{ asset('/') }}sitesetting_images/thumb/{{ $siteSetting->site_logo }}" alt="{{ $siteSetting->site_name }}" />
+		</a>
+	</div>
+	
 	<div class="usernavwrap">
     <ul class="usernavdash">
         <li class="{{ Request::url() == route('company.home') ? 'active' : '' }}"><a href="{{route('company.home')}}"><i class="fas fa-tachometer" aria-hidden="true"></i> {{__('Dashboard')}}</a></li>

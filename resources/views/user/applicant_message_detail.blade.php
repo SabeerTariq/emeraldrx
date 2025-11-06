@@ -1,11 +1,13 @@
 @extends('layouts.app')
 @section('content') 
 <!-- Header start --> 
+@php
+$isDashboardPage = (Auth::check() || Auth::guard('company')->check());
+@endphp
+@if($isDashboardPage === false)
 @include('includes.header') 
+@endif
 <!-- Header end --> 
-<!-- Inner Page Title start --> 
-@include('includes.inner_page_title', ['page_title'=>__('My Messages')]) 
-<!-- Inner Page Title end -->
 <div class="listpgWraper">
     <div class="container">
         <div class="row"> @include('includes.user_dashboard_menu')
@@ -49,7 +51,9 @@
             </div>
         </div>
     </div>
+    @if($isDashboardPage === false)
     @include('includes.footer')
+    @endif
     @endsection
     @push('scripts')
     @include('includes.immediate_available_btn')

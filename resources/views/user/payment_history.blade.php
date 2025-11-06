@@ -2,19 +2,19 @@
 
 @section('content') 
 <!-- Header start --> 
+@php
+$isDashboardPage = (Auth::check() || Auth::guard('company')->check());
+@endphp
+@if($isDashboardPage === false)
 @include('includes.header') 
+@endif
 <!-- Header end --> 
-
-
-
-<!-- Inner Page Title start --> 
-@include('includes.inner_page_title', ['page_title' => __('Payment History')]) 
-<!-- Inner Page Title end -->
 <div class="listpgWraper">
     <div class="container">
         <div class="row">
         @include('includes.user_dashboard_menu')
-            <div class="col-md-9 col-sm-8"> 
+            <div class="col-md-9 col-sm-8">
+                @include('includes.dashboard_content_header') 
     @include('flash::message') 
     <table class="table table-striped table-bordered table-hover">
         <thead class="table-dark">
@@ -62,7 +62,9 @@
 
 
 
+@if($isDashboardPage === false)
 @include('includes.footer')
+@endif
 @endsection
 
 @push('scripts')
