@@ -128,8 +128,26 @@ class CompanyController extends Controller
     public function index()
 
     {
-
-        return view('company_home');
+        $company = Auth::guard('company')->user();
+        
+        // Get company's jobs (limit to recent 5)
+        $jobs = $company->jobs()->orderBy('id', 'desc')->limit(5)->get();
+        
+        // Get total applications for company's jobs
+        $jobIds = $company->jobs()->pluck('id');
+        $totalApplications = JobApply::whereIn('job_id', $jobIds)->count();
+        
+        // Get recent applications (limit to 5)
+        $recentApplications = JobApply::whereIn('job_id', $jobIds)
+            ->with(['user', 'job'])
+            ->orderBy('id', 'desc')
+            ->limit(5)
+            ->get();
+        
+        // Get total jobs count
+        $totalJobs = $company->jobs()->count();
+        
+        return view('company_home', compact('jobs', 'totalApplications', 'recentApplications', 'totalJobs'));
 
     }
 

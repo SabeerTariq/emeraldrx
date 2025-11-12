@@ -1,23 +1,33 @@
 <ul class="row profilestat">
-    <li class="col-md-4 col-6">
-        <a href="{{route('posted.jobs')}}" class="inbox"> <i class="fas fa-clock" aria-hidden="true"></i>
-            <h6>{{Auth::guard('company')->user()->countOpenJobs()}}
-            <strong>{{__('Open Jobs')}}</strong>
-        </h6>
-</a>
+    <li class="col-md-6 col-6">
+        <a href="{{route('posted.jobs')}}" class="inbox"> 
+            <i class="fas fa-briefcase" aria-hidden="true"></i>
+            <h6>
+                @if(isset($totalJobs))
+                    {{ $totalJobs }}
+                @else
+                    {{Auth::guard('company')->user()->jobs()->count()}}
+                @endif
+                <strong>{{__('Jobs Posted')}}</strong>
+            </h6>
+        </a>
     </li>
-    <li class="col-md-4 col-6">
-        <a href="{{route('company.followers')}}" class="inbox"> <i class="fas fa-user" aria-hidden="true"></i>
-            <h6>{{Auth::guard('company')->user()->countFollowers()}}
-            <strong>{{__('Followers')}}</strong> 
-        </h6>
-</a>
-    </li>
-     <li class="col-md-4 col-6">
-        <a href="{{route('company.messages')}}" class="inbox"> <i class="fas fa-envelope" aria-hidden="true"></i>
-            <h6>{{Auth::guard('company')->user()->countCompanyMessages()}}
-            <strong>{{__('Messages')}}</strong>
-        </h6>
-</a>
+    <li class="col-md-6 col-6">
+        <a href="#" class="inbox"> 
+            <i class="fas fa-users" aria-hidden="true"></i>
+            <h6>
+                @if(isset($totalApplications))
+                    {{ $totalApplications }}
+                @else
+                    @php
+                        $company = Auth::guard('company')->user();
+                        $jobIds = $company->jobs()->pluck('id');
+                        $appCount = App\JobApply::whereIn('job_id', $jobIds)->count();
+                    @endphp
+                    {{ $appCount }}
+                @endif
+                <strong>{{__('People Applied')}}</strong>
+            </h6>
+        </a>
     </li>
 </ul>

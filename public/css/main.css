@@ -2479,7 +2479,7 @@ label.partTime[title="Rotating"] {
 *************************************************/
 .turbolinks-progress-bar{background: rgb(95, 255, 2) !important;}
 .listpgWraper {
-	padding: 40px 0 40px 0;
+	padding: 10px 0 40px 0;
 	min-height: 400px;
 }
 .pageSearch {
@@ -5035,7 +5035,7 @@ blockquote:after {
 /* Dashboard Sidebar Logo */
 .dashboard-sidebar-logo {
 	padding: 20px 15px;
-	background: #fff;
+	background: #00386a;
 	border-radius: 5px;
 	margin-bottom: 15px;
 	text-align: center;
@@ -5140,7 +5140,8 @@ blockquote:after {
 
 /* Sticky and scrollable sidebar for dashboard */
 @media (min-width: 992px) {
-	.listpgWraper .row .col-lg-3 {
+	/* Target sidebar column - using first-child as fallback for browsers without :has() support */
+	.listpgWraper .row > .col-lg-3:first-child {
 		position: sticky;
 		top: 20px;
 		align-self: flex-start;
@@ -5149,59 +5150,102 @@ blockquote:after {
 		overflow-x: hidden;
 	}
 	
-	.listpgWraper .row .col-lg-3::-webkit-scrollbar {
+	/* Only apply blue background to sidebar that contains dashboard menu */
+	.listpgWraper .row > .col-lg-3:first-child:has(.usernavwrap),
+	.listpgWraper .row > .col-lg-3:first-child:has(.dashboard-sidebar-logo) {
+		background: #00386a;
+		border-radius: 5px;
+		padding: 15px;
+		padding-bottom: 100px;
+	}
+	
+	/* Fallback for browsers without :has() - target by containing specific classes */
+	.listpgWraper .row > .col-lg-3:first-child .usernavwrap ~ *,
+	.listpgWraper .row > .col-lg-3:first-child .dashboard-sidebar-logo ~ * {
+		/* This ensures child elements don't override */
+	}
+	
+	/* Scrollbar for sidebar only */
+	.listpgWraper .row > .col-lg-3:first-child:has(.usernavwrap)::-webkit-scrollbar,
+	.listpgWraper .row > .col-lg-3:first-child:has(.dashboard-sidebar-logo)::-webkit-scrollbar {
 		width: 6px;
 	}
 	
-	.listpgWraper .row .col-lg-3::-webkit-scrollbar-track {
-		background: #f1f1f1;
+	.listpgWraper .row > .col-lg-3:first-child:has(.usernavwrap)::-webkit-scrollbar-track,
+	.listpgWraper .row > .col-lg-3:first-child:has(.dashboard-sidebar-logo)::-webkit-scrollbar-track {
+		background: #00386a;
 		border-radius: 10px;
 	}
 	
-	.listpgWraper .row .col-lg-3::-webkit-scrollbar-thumb {
-		background: #27bcbb;
+	.listpgWraper .row > .col-lg-3:first-child:has(.usernavwrap)::-webkit-scrollbar-thumb,
+	.listpgWraper .row > .col-lg-3:first-child:has(.dashboard-sidebar-logo)::-webkit-scrollbar-thumb {
+		background: #00386a;
 		border-radius: 10px;
 	}
 	
-	.listpgWraper .row .col-lg-3::-webkit-scrollbar-thumb:hover {
-		background: #1fa5a4;
+	.listpgWraper .row > .col-lg-3:first-child:has(.usernavwrap)::-webkit-scrollbar-thumb:hover,
+	.listpgWraper .row > .col-lg-3:first-child:has(.dashboard-sidebar-logo)::-webkit-scrollbar-thumb:hover {
+		background: #00386a;
 	}
 	
-	/* Adjust content area padding for sticky header */
-	.listpgWraper .row .col-lg-9,
-	.listpgWraper .row .col-md-9 {
+	/* Ensure content area is independent with transparent background */
+	.listpgWraper .row > .col-lg-9,
+	.listpgWraper .row > .col-md-9 {
 		position: relative;
+		background: transparent !important;
+	}
+	
+	/* Ensure all dashboard cards and content maintain white background */
+	.listpgWraper .row > .col-lg-9 .inbox,
+	.listpgWraper .row > .col-lg-9 .profbox,
+	.listpgWraper .row > .col-lg-9 .appliedjobswrap,
+	.listpgWraper .row > .col-lg-9 .usercoverphoto,
+	.listpgWraper .row > .col-lg-9 .profileban,
+	.listpgWraper .row > .col-lg-9 .featuredlist .jobint,
+	.listpgWraper .row > .col-lg-9 .userprofilealert,
+	.listpgWraper .row > .col-lg-9 table,
+	.listpgWraper .row > .col-lg-9 .abtuser {
+		background: #fff !important;
+	}
+	
+	/* Ensure other col-lg-3 elements (not sidebar) maintain their default styling */
+	.listpgWraper .row > .col-lg-3:not(:first-child) {
+		background: transparent;
 	}
 }
 
-.usernavwrap{background: #fff; border-radius: 5px; margin-bottom: 30px;}
+.usernavwrap{background: transparent; border-radius: 5px; margin-bottom: 30px;}
 .usernavdash {
 	margin-bottom: 0;
 	
 }
 .usernavdash li a {
 	border-bottom: none;
-	padding: 10px 15px;
-	color: #444;
+	padding: 15px 20px;
+	color: #fff;
+	font-size: 18px;
+	font-weight: 500;
 	display: flex;
 	align-items: center;
 }
 
 .usernavdash li a:hover {
-	color: #27bcbb;
+	color: #fff;
+	background: rgba(255, 255, 255, 0.15);
 	text-decoration: none;
 }
 .usernavdash li i {
-	margin-right: 2px;
-	font-size: 18px;
-	width: 25px;
-	color: #999;
+	margin-right: 12px;
+	font-size: 24px;
+	width: 30px;
+	color: #fff;
 }
 .usernavdash li.active a {
-	color: #27bcbb;
+	color: #fff;
+	background: rgba(255, 255, 255, 0.2);
 }
 .usernavdash li.active a i, .usernavdash li a:hover i {
-	color: #27bcbb;
+	color: #fff;
 }
 .fade:not(.show){opacity: 1;}
 .profbox{margin-bottom: 30px;}
@@ -6486,11 +6530,12 @@ Large Mobile Screen
 .mobilenav ul li a{display: block; padding: 10px 20px; text-align: center; color: #333;}
 .mobilenav ul li a svg{font-size: 24px; width: 30px;}
 .mobilenav ul li a span{font-size: 14px; display: block;}
-.usernavdash{position: fixed; background: #fff; box-shadow:0 -15px 30px rgba(0,0,0,0.2); border-radius: 10px 10px 0 0; padding:15px 0; left:0px; right: 0px; bottom: 56px; z-index: 99; display: none; 
+.usernavdash{position: fixed; background: #27bcbb; box-shadow:0 -15px 30px rgba(0,0,0,0.2); border-radius: 10px 10px 0 0; padding:15px 0; left:0px; right: 0px; bottom: 56px; z-index: 99; display: none; 
 	transform: translateY(100%); /* Start off-screen */
     transition: transform 0.3s ease-in-out; /* Smooth animation */
 }
-.usernavdash li a{padding: 15px 25px; color: #666; font-size: 16px;}
+.usernavdash li a{padding: 15px 25px; color: #fff; font-size: 18px; font-weight: 500;}
+.usernavdash li a i{color: #fff; font-size: 24px;}
 
 .usernavdash.show {
     display: block;

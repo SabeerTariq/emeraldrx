@@ -37,9 +37,8 @@ $isDashboardPage = (Auth::check() || Auth::guard('company')->check());
                 @include('includes.dashboard_content_header')
             @if(count(auth()->user()->getProfileProjectsArray())==0 || count(auth()->user()->getProfileCvsArray())==0 || count(auth()->user()->profileExperience()->get()) == 0 || count(auth()->user()->profileEducation()->get()) == 0 || count(auth()->user()->profileSkills()->get()) == 0)
 				<div class="userprofilealert"><h5><i class="fas fa-exclamation-triangle"></i> Your Resume is incomplete please update.</h5>
-				<div class="editbtbn"><a href="{{ route('build.resume') }}"><i class="fas fa-user-edit"></i> Complete CV </a></div>	</div>
+				<div class="editbtbn"><a href="{{ route('build.resume') }}"><i class="fas fa-user-edit"></i> Complete Profile </a></div>	</div>
 				@endif
-            @include('includes.user_dashboard_stats')
             <div class="usercoverphoto">{{auth()->user()->printUserCoverImage()}}                    
                 <a href="{{ route('my.profile') }}"><i class="fas fa-edit"></i></a>
             </div>
@@ -180,50 +179,6 @@ $isDashboardPage = (Auth::check() || Auth::guard('company')->check());
 
                                 </ul>
                             </div>
-
- <!-- My Followings -->
-
-                            <div class="profbox followbox">
-								<h3>{{__('My Followings')}} <a href="{{route('my.followings')}}">{{__('View All')}} <i class="fas fa-arrow-right"></i></a></h3>
-								<ul class="row compnaieslist">
-								@if(isset($followers) && $followers->isNotEmpty())
-                                @foreach($followers as $follow)
-                                @php
-                                    $company = \App\Company::where('slug', $follow->company_slug)
-                                        ->where('is_active', 1)
-                                        ->first();
-                                @endphp
-                                @if(isset($company))
-                                    <li class="col-lg-4 col-md-6">
-                                        <div class="empint">
-                                            <a href="{{route('company.detail', $company->slug)}}" title="{{$company->name}}">
-                                                <div class="emptbox">
-                                                    <div class="comimg">{{$company->printCompanyImage()}}</div>
-                                                    <div class="text-info-right">
-                                                        <h4>{{$company->name}}</h4>    
-                                                        @if($company->getIndustry('industry'))
-                                                            <div class="indst">                            
-                                                                {{ $company->getIndustry('industry') }}                          
-                                                            </div>
-                                                        @endif
-                                                        <div class="emloc"><i class="fas fa-map-marker-alt"></i> {{$company->location}}</div>
-                                                    </div>                                         
-                                                    <div class="cm-info-bottom">
-                                                        <span><i class="fas fa-briefcase"></i> {{$company->countNumJobs('company_id',$company->id)}} {{__('Open Jobs')}}</span>
-                                                    </div>    
-                                                </div>
-                                            </a>                    
-                                        </div>
-                                    </li>
-                                @endif
-                            @endforeach
-                                @else
-                                <li class="col-lg-12">{{ __('No Followings Found') }}</li>
-                                @endif
-								</ul>
-								
-							</div>
-
 
 			</div>
         </div>

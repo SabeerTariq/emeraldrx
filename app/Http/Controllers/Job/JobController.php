@@ -418,8 +418,13 @@ class JobController extends Controller
             return redirect()->away($url)->withHeaders(['target' => '_blank']);
         }
         
-        event(new JobApplied($job, $jobApply,$myCv));
-        
+        // Fire event for email notifications (wrap in try-catch to prevent email errors from breaking job application)
+        try {
+            event(new JobApplied($job, $jobApply,$myCv));
+        } catch (\Exception $e) {
+            // Log the error but don't fail the job application
+            \Log::error('Failed to send job applied notifications: ' . $e->getMessage());
+        }
 
         flash(__('You have successfully applied for this job'))->success();
         return \Redirect::route('job.detail', $job_slug);

@@ -203,7 +203,7 @@ trait JobTrait
         $job->job_experience_id = $request->input('job_experience_id');
 
         $job->salary_period_id = $request->input('salary_period_id');
-        $job->external_job = $request->input('external_job');
+        $job->external_job = $request->input('external_job', 'no');
         $job->job_link = $request->input('job_link');
 
         return $job;
@@ -592,7 +592,13 @@ trait JobTrait
 
 
 
-        event(new JobPosted($job));
+        // Fire event for email notifications (wrap in try-catch to prevent email errors from breaking job posting)
+        try {
+            event(new JobPosted($job));
+        } catch (\Exception $e) {
+            // Log the error but don't fail the job posting
+            \Log::error('Failed to send job posted notifications: ' . $e->getMessage());
+        }
 
         flash('Job has been added!')->success();
 

@@ -65,201 +65,105 @@ $isDashboardPage = (Auth::check() || Auth::guard('company')->check());
 
         
 
-        <?php if(null !== $package){ ?>
-        @include('includes.company_package_msg')
-        @include('includes.company_packages_upgrade')
-        <?php }elseif(null !== $packages){ ?>
-        @include('includes.company_packages_new')
-        <?php }} ?>
+        <?php } ?>
 
-
-
-        <div class="paypackages mt-5">
-    <!---four-plan-->
-    <?php 
-        $company = Auth::guard('company')->user(); 
-        $currentPackage = $company->cvs_getPackage(); 
-    ?>
-    @if(null !== $currentPackage)
-    @if(null!==($currentPackage) && !empty($currentPackage))
-<div class="instoretxt">
-
-<h3>{{__('Purchased Cvs  Package Details')}}</h3>
-<div class="table-responsive">
-    <table class="table table-bordered mb-0">
-    <thead class="table-dark">
-        <tr>
-        <th scope="col">{{ __('Package Name') }}</th>
-<th scope="col">{{ __('Price') }}</th>
-<th scope="col">{{ __('Available CV quota') }}</th>
-<th scope="col">{{ __('Purchased On') }}</th>
-<th scope="col">{{ __('Package Expired') }}</th>
-
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-        <th>{{$currentPackage->package_title}}</th>
-        <td>{{ $siteSetting->default_currency_code }}{{$currentPackage->package_price}}</td>
-        <td><strong>{{ $company->availed_cvs_quota ?? 0 }}</strong> / <strong>{{$company->cvs_quota}}</strong></td>
-        <td><strong>{{Carbon\Carbon::parse($company->cvs_package_start_date)->format('d M, Y')}}</strong></td>
-        <td><strong>{{Carbon\Carbon::parse($company->cvs_package_end_date)->format('d M, Y')}}</strong></td>
-        </tr>
-    </tbody>
-    </table>
-</div>
-</div>
-
-
-
-
-
-            @endif
-        <div class="four-plan">
-            <h3>{{__('Upgrade CV Search Package')}}</h3>
-            <div class="row">
-                <?php $packages = App\Package::get(); ?>
-                @foreach($packages as $package)
-                    @if($package->package_for == 'cv_search')
-                        <div class="col-md-4 col-sm-6 col-xs-12">
-                            <ul class="boxes">
-                                <li class="plan-name">{{$package->package_title}}</li>
-                                <li>
-                                    <div class="main-plan">
-                                        <div class="plan-price1-1">{{ $siteSetting->default_currency_code }}</div>
-                                        <div class="plan-price1-2">{{$package->package_price}}</div>
-                                        <div class="clearfix"></div>
-                                    </div>
-                                </li>
-                                <li class="plan-pages"><i class="far fa-check-circle"></i> {{__('Applicant CV Views')}} {{$package->package_num_listings}}</li>
-                                <li class="plan-pages"><i class="far fa-check-circle"></i> {{__('CV View Access')}} {{$package->package_num_days}} {{__('Days')}}</li>
-                                <li class="plan-pages"><i class="far fa-check-circle"></i> {{__('Premium Support 24/7')}}</li> 
-                                
-                                <li class="order paypal"><a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#buypack{{$package->id}}" class="reqbtn">{{__('Buy Now')}} <i class="fas fa-arrow-right"></i></a></li>
-                                
-                            </ul>
-                        </div>
-
-
-                        <div class="modal fade" id="buypack{{$package->id}}" tabindex="-1" role="dialog" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">{{__('Buy Now')}}</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                       
-                        <div class="invitereval">
-                        <h3>{{__('Choose Your Payment Method')}}</h3>	
-                            
-                        <div class="totalpay">{{__('Total Amount to pay')}}: <strong>{{ $siteSetting->default_currency_code }} {{$package->package_price}}</strong></div>
-                            
-                        <ul class="btn2s">
-                        
-                                @if((bool)$siteSetting->is_paypal_active)
-                                <li class="order paypal p-2">
-                                        <a href="{{route('order.upgrade.package', $package->id)}}" class="paypal">
-                                            <i class="fab fa-cc-paypal" aria-hidden="true"></i> {{__('PayPal')}}
-                                        </a>
-                                        </li>
+        <!-- Jobs Posted Section -->
+        <div class="profbox mt-4">
+            <h3>{{__('Recent Jobs Posted')}} <a href="{{route('posted.jobs')}}" style="float: right; font-size: 14px;">{{__('View All')}} <i class="fas fa-arrow-right"></i></a></h3>
+            @if(isset($jobs) && count($jobs) > 0)
+                <ul class="featuredlist row">
+                    @foreach($jobs as $job)
+                        <li class="col-lg-6 col-md-6 @if($job->is_featured == 1) featured @endif">
+                            <div class="jobint">
+                                @if($job->is_featured == 1) 
+                                    <span class="promotepof-badge"><i class="fa fa-bolt" title="{{__('Featured Job')}}"></i></span> 
                                 @endif
-                                @if((bool)$siteSetting->is_stripe_active)
-                                <li class="order p-2">
-                                        <a href="{{route('stripe.order.form', [$package->id, 'upgrade'])}}">
-                                            <i class="fab fa-cc-stripe" aria-hidden="true"></i> {{__('Stripe')}}
-                                        </a>
-                                        </li>
-                                @endif
-
-                        </ul>		
-                        </div>
-                        </div>
-                        </div>
-                        </div>
-                        </div>
-                    @endif
-                @endforeach
-            </div>
-        </div>
-    @else
-        <div class="four-plan">
-            <h3>{{__('CV Search Packages')}}</h3>
-            <div class="row">
-                <?php $packages = App\Package::get(); ?>
-                @foreach($packages as $package)
-                    @if($package->package_for == 'cv_search')
-                        <div class="col-md-4 col-sm-6 col-xs-12">
-                            <ul class="boxes">
-                                <li class="plan-name">{{$package->package_title}}</li>
-                                <li>
-                                    <div class="main-plan">
-                                        <div class="plan-price1-1">{{ $siteSetting->default_currency_code }}</div>
-                                        <div class="plan-price1-2">{{$package->package_price}}</div>
-                                        <div class="clearfix"></div>
+                                <div class="d-flex">
+                                    <div class="fticon"><i class="fas fa-briefcase"></i> {{$job->getJobType('job_type')}}</div>                        
+                                </div>
+                                <h4>
+                                    <a href="{{route('job.detail', [$job->slug])}}" title="{{$job->title}}">
+                                        {!! \Illuminate\Support\Str::limit($job->title, 30, '...') !!}
+                                    </a>
+                                </h4>
+                                @if(!(bool)$job->hide_salary && $job->salary_from)                    
+                                    <div class="salary mb-2">Salary: 
+                                        <strong>{{$job->salary_currency}}{{$job->salary_from}} - {{$job->salary_currency}}{{$job->salary_to}}/{{$job->getSalaryPeriod('salary_period')}}</strong>
                                     </div>
-                                </li>
-                                <li class="plan-pages"><i class="far fa-check-circle"></i> {{__('Applicant CV Views')}} {{$package->package_num_listings}}</li>
-                                <li class="plan-pages"><i class="far fa-check-circle"></i> {{__('CV View Access')}} {{$package->package_num_days}} {{__('Days')}}</li>
-                                <li class="plan-pages"><i class="far fa-check-circle"></i> {{__('Premium Support 24/7')}}</li> 
-                                
-                                <li class="order paypal"><a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#buypack{{$package->id}}" class="reqbtn">{{__('Buy Now')}} <i class="fas fa-arrow-right"></i></a></li>
-
-                            </ul>
-                        </div>
-
-
-
-                        <div class="modal fade" id="buypack{{$package->id}}" tabindex="-1" role="dialog" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                        <div class="modal-header">
-                                <h5 class="modal-title">{{__('Buy Now')}}</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                @endif 
+                                <strong><i class="fas fa-map-marker-alt"></i> {{$job->getCity('city')}}</strong>
+                                <div class="jobcompany">
+                                    <div class="ftjobcomp">
+                                        <span>{{$job->created_at->format('M d, Y')}}</span>
+                                        @php
+                                            $appliedCount = App\JobApply::where('job_id', $job->id)->count();
+                                        @endphp
+                                        <span style="margin-left: 10px;"><i class="fas fa-users"></i> {{$appliedCount}} {{__('Applications')}}</span>
+                                    </div>
+                                </div>
+                                <div class="mt-2">
+                                    <a href="{{route('list.applied.users', $job->id)}}" class="btn btn-sm btn-primary">{{__('View Applications')}}</a>
+                                </div>
                             </div>
-                        <div class="modal-body">
-            
-                        <div class="invitereval">
-                        <h3> Choose Your Payment Method</h3>	
-                            
-                        <div class="totalpay">{{__('Total Amount to pay')}}: <strong>{{ $siteSetting->default_currency_code }} {{$package->package_price}}</strong></div>
-                            
-                        <ul class="btn2s">
-                        
-                                @if((bool)$siteSetting->is_paypal_active)
-                                <li class="order paypal p-2">
-                                        <a href="{{route('order.upgrade.package', $package->id)}}" class="paypal">
-                                            <i class="fab fa-cc-paypal" aria-hidden="true"></i> {{__('PayPal')}}
-                                        </a>
-                                        </li>
-                                @endif
-                                @if((bool)$siteSetting->is_stripe_active)
-                                <li class="order p-2">
-                                        <a href="{{route('stripe.order.form', [$package->id, 'upgrade'])}}">
-                                            <i class="fab fa-cc-stripe" aria-hidden="true"></i> {{__('Stripe')}}
-                                        </a>
-                                        </li>
-                                @endif
-
-                        </ul>		
-                        </div>
-                        </div>
-                        </div>
-                        </div>
-                        </div>
-
-
-
-                    @endif
-                @endforeach
-            </div>
+                        </li>
+                    @endforeach
+                </ul>
+            @else
+                <div class="alert alert-info">{{__('No jobs posted yet')}}. <a href="{{route('post.job')}}">{{__('Post your first job')}}</a></div>
+            @endif
         </div>
-    @endif
-    <!---end four-plan-->
-</div>
 
-
-
+        <!-- People Applied Section -->
+        <div class="profbox mt-4">
+            <h3>{{__('Recent Applications')}}</h3>
+            @if(isset($recentApplications) && count($recentApplications) > 0)
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>{{__('Applicant Name')}}</th>
+                                <th>{{__('Job Title')}}</th>
+                                <th>{{__('Applied Date')}}</th>
+                                <th>{{__('Status')}}</th>
+                                <th>{{__('Action')}}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($recentApplications as $application)
+                                @php
+                                    $user = $application->user;
+                                    $job = $application->job;
+                                @endphp
+                                @if($user && $job)
+                                    <tr>
+                                        <td>
+                                            <strong>{{$user->name}}</strong><br>
+                                            <small>{{$user->email}}</small>
+                                        </td>
+                                        <td>
+                                            <a href="{{route('job.detail', [$job->slug])}}" title="{{$job->title}}">
+                                                {{ \Illuminate\Support\Str::limit($job->title, 30, '...') }}
+                                            </a>
+                                        </td>
+                                        <td>{{$application->created_at->format('M d, Y')}}</td>
+                                        <td>
+                                            <span class="badge badge-{{$application->status == 'applied' ? 'primary' : ($application->status == 'shortlisted' ? 'success' : 'secondary')}}">
+                                                {{ucfirst($application->status)}}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="{{route('list.applied.users', $job->id)}}" class="btn btn-sm btn-primary">{{__('View')}}</a>
+                                        </td>
+                                    </tr>
+                                @endif
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <div class="alert alert-info">{{__('No applications received yet')}}</div>
+            @endif
+        </div>
 
         </div>
         </div>
