@@ -55,13 +55,27 @@ trait FetchJobs
     public function fetchJobs($search = '', $job_titles = array(), $company_ids = array(), $industry_ids = array(), $job_skill_ids = array(), $functional_area_ids = array(), $country_ids = array(), $state_ids = array(), $city_ids = array(), $is_freelance = -1, $career_level_ids = array(), $job_type_ids = array(), $job_shift_ids = array(), $gender_ids = array(), $degree_level_ids = array(), $job_experience_ids = array(), $salary_from = 0, $salary_to = 0, $salary_currency = '', $is_featured = -1, $orderBy = 'id', $limit = 10)
     {
         $asc_desc = 'DESC';
-        $query = Job::select($this->fields);
+        $query = Job::select($this->fields)->with('company'); // Eager load company relationship
         $query = $this->createQuery($query, $search, $job_titles, $company_ids, $industry_ids, $job_skill_ids, $functional_area_ids, $country_ids, $state_ids, $city_ids, $is_freelance, $career_level_ids, $job_type_ids, $job_shift_ids, $gender_ids, $degree_level_ids, $job_experience_ids, $salary_from, $salary_to, $salary_currency, $is_featured);
 
         //$query->orderBy('jobs.is_featured', 'DESC');
         $query->orderBy('jobs.id', 'DESC');
         //echo $query->toSql();exit;
-        return $query->paginate($limit);
+        $result = $query->paginate($limit);
+        
+        // Log for debugging
+        \Log::info('FetchJobs: Total=' . $result->total() . ', Count=' . $result->count());
+        if ($result->count() > 0) {
+            $firstJob = $result->first();
+            \Log::info('First job ID: ' . $firstJob->id . ', Company loaded: ' . ($firstJob->relationLoaded('company') ? 'Yes' : 'No'));
+            if ($firstJob->company) {
+                \Log::info('First job company: ID=' . $firstJob->company->id . ', Active=' . $firstJob->company->is_active);
+            } else {
+                \Log::info('First job company: NULL');
+            }
+        }
+        
+        return $result;
     }
 
     public function fetchIdsArray($search = '', $job_titles = array(), $company_ids = array(), $industry_ids = array(), $job_skill_ids = array(), $functional_area_ids = array(), $country_ids = array(), $state_ids = array(), $city_ids = array(), $is_freelance = -1, $career_level_ids = array(), $job_type_ids = array(), $job_shift_ids = array(), $gender_ids = array(), $degree_level_ids = array(), $job_experience_ids = array(), $salary_from = 0, $salary_to = 0, $salary_currency = '', $is_featured = -1, $field = 'jobs.id')
@@ -75,29 +89,25 @@ trait FetchJobs
 
     public function createQuery($query, $search = '', $job_titles = array(), $company_ids = array(), $industry_ids = array(), $job_skill_ids = array(), $functional_area_ids = array(), $country_ids = array(), $state_ids = array(), $city_ids = array(), $is_freelance = -1, $career_level_ids = array(), $job_type_ids = array(), $job_shift_ids = array(), $gender_ids = array(), $degree_level_ids = array(), $job_experience_ids = array(), $salary_from = 0, $salary_to = 0, $salary_currency = '', $is_featured = -1)
     {
-    
-       
+        // Note: When no search parameters are provided (all arrays empty, strings empty),
+        // this query will return ALL active, non-expired jobs by default.
+        // Filters are only applied when parameters are provided.
          
-        $active_company_ids_array = Company::where('is_active', 1)->pluck('id')->toArray();
-        if (isset($company_ids[0]) && isset($active_company_ids_array[0])) {
-            $company_ids = array_intersect($company_ids,$active_company_ids_array);
-        }
-        //dd($company_ids);
-		$company_ids_array=array();
-        if (isset($industry_ids[0])) {
-            $company_ids_array = Company::whereIn('industry_id', $industry_ids)->pluck('id')->toArray();
-            if (isset($company_ids[0]) && isset($company_ids_array[0])) {
-                $company_ids = array_intersect($company_ids_array, $company_ids);
+        // Always filter by active companies using whereHas to ensure relationship exists
+        $query->whereHas('company', function($q) use ($company_ids, $industry_ids) {
+            $q->where('is_active', 1);
+            
+            // If specific company_ids are provided, filter by them
+            if (isset($company_ids[0]) && count($company_ids) > 0) {
+                $q->whereIn('id', $company_ids);
             }
-            $company_ids = $company_ids_array;
-        }
+            
+            // Filter by industry if provided
+            if (isset($industry_ids[0]) && count($industry_ids) > 0) {
+                $q->whereIn('industry_id', $industry_ids);
+            }
+        });
         
-        
-         
-        if (isset($company_ids[0])) {
-           // dd($company_ids[0]);
-            $query->whereIn('jobs.company_id', $company_ids);
-        }   
         $query->where('jobs.is_active', 1);
         if ($search != '') {
             $query = $query->whereRaw("MATCH (`search`) AGAINST ('$search*' IN BOOLEAN MODE)");
@@ -160,7 +170,12 @@ trait FetchJobs
             $query->where('jobs.is_featured', '=', $is_featured);
         }
         
-        $query->notExpire();
+        // Filter expired jobs: include jobs with NULL expiry_date or expiry_date in the future
+        $query->where(function($q) {
+            $q->whereNull('jobs.expiry_date')
+              ->orWhereDate('jobs.expiry_date', '>', \Carbon\Carbon::now());
+        });
+        
         return $query;
     }
 

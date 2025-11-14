@@ -1,12 +1,5 @@
 <div class="col-lg-3"> 
 	<div class="jobreqbtn">
-	@if (Request::get('search') != '' || Request::get('functional_area_id') != '' || Request::get('country_id') != ''|| Request::get('state_id') != '' || Request::get('city_id') != ''|| Request::get('city_id') != '')
-	<a class="btn btn-job-alert" href="javascript:;">
-		<i class="fa fa-bell" style="font-size:1.125rem;"></i> {{__('Save Job Alert')}} </a>
-	
-	@endif
-	
-	
 	@if(Auth::guard('company')->check())
 	<a href="{{ route('post.job') }}" class="btn"><i class="fa fa-file-text" aria-hidden="true"></i> {{__('Post Job')}}</a>
 	@else

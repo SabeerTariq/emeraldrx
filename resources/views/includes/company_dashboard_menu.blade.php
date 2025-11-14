@@ -1,4 +1,4 @@
-<div class="col-lg-3">
+<div class="col-lg-3 dashboard-sidebar">
 	<!-- Dashboard Sidebar Logo -->
 	<div class="dashboard-sidebar-logo">
 		<a href="{{url('/')}}" class="logo">
@@ -9,7 +9,6 @@
 	<div class="usernavwrap">
     <ul class="usernavdash">
         <li class="{{ Request::url() == route('company.home') ? 'active' : '' }}"><a href="{{route('company.home')}}"><i class="fas fa-tachometer" aria-hidden="true"></i> {{__('Dashboard')}}</a></li>
-        <li class="{{ Request::url() == route('job.seeker.list') ? 'active' : '' }}"><a href="{{ route('job.seeker.list') }}"><i class="fas fa-search" aria-hidden="true"></i> {{__('Search Talent')}}</a></li>
         <li class="{{ Request::url() == route('company.profile') ? 'active' : '' }}"><a href="{{ route('company.profile') }}"><i class="fas fa-pencil" aria-hidden="true"></i> {{__('Edit Account Details')}}</a></li>
         <li><a href="{{ route('company.detail', Auth::guard('company')->user()->slug) }}"><i class="fas fa-user-alt" aria-hidden="true"></i> {{__('Company Public Profile')}}</a></li>
         <li class="{{ Request::url() == route('post.job') ? 'active' : '' }}"><a href="{{ route('post.job') }}"><i class="fas fa-desktop" aria-hidden="true"></i> {{__('Post a Job')}}</a></li>

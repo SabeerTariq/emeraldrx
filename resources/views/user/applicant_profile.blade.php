@@ -22,22 +22,13 @@ if(null!==($package)){
     }
 ?>
 <!-- Inner Page Title end -->
-<div class="listpgWraper">
-    <div class="container">  
+<div class="listpgWraper applicant-profile-wrapper">
+    <div class="container applicant-profile-container">  
         @include('flash::message')  
         
-
-		
-
-
-
-                      
-		
-
-		
         <!-- Job Detail start -->
-        <div class="row">
-            <div class="col-md-8">    
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-xl-8">    
             <div class="usercoverimg">
 
 {{$user->printUserCoverImage()}}
@@ -184,17 +175,17 @@ if ($companyUser) {
                 </div>
 
                 <!-- Portfolio start -->
-		<div class="userdetailbox profileproject">
+		<!-- <div class="userdetailbox profileproject">
 				<h3>{{__('Portfolio')}}</h3>
 				<div class="" id="projects_div"></div>            
-		</div>
+		</div> -->
 		
 
                
 
                 
             </div>
-            <div class="col-md-4"> 
+            <div class="col-lg-4 col-xl-8"> 
                 <?php if($true == TRUE){?>
                  <!-- Candidate Contact -->
                 <div class="job-header">

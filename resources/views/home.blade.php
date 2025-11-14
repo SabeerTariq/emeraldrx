@@ -33,7 +33,7 @@ $isDashboardPage = (Auth::check() || Auth::guard('company')->check());
 <div class="listpgWraper">
     <div class="container">@include('flash::message')
         <div class="row"> @include('includes.user_dashboard_menu')
-            <div class="col-lg-9">
+            <div class="col-lg-9 dashboard-content">
                 @include('includes.dashboard_content_header')
             @if(count(auth()->user()->getProfileProjectsArray())==0 || count(auth()->user()->getProfileCvsArray())==0 || count(auth()->user()->profileExperience()->get()) == 0 || count(auth()->user()->profileEducation()->get()) == 0 || count(auth()->user()->profileSkills()->get()) == 0)
 				<div class="userprofilealert"><h5><i class="fas fa-exclamation-triangle"></i> Your Resume is incomplete please update.</h5>

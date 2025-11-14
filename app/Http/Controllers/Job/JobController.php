@@ -94,8 +94,16 @@ class JobController extends Controller
         
 
         
+        // Enable query logging for debugging
+        \DB::enableQueryLog();
+        
         $jobs = $this->fetchJobs($search, $job_titles, $company_ids, $industry_ids, $job_skill_ids, $functional_area_ids, $country_ids, $state_ids, $city_ids, $is_freelance, $career_level_ids, $job_type_ids, $job_shift_ids, $gender_ids, $degree_level_ids, $job_experience_ids, $salary_from, $salary_to, $salary_currency, $is_featured, $order_by, $limit);
         
+        // Debug: Log the jobs count and SQL query
+        \Log::info('Jobs count: ' . $jobs->total());
+        \Log::info('Jobs items: ' . $jobs->count());
+        $queries = \DB::getQueryLog();
+        \Log::info('Last SQL Query: ' . json_encode(end($queries)));
 
         /*         * ************************************************** */
 
@@ -167,6 +175,8 @@ class JobController extends Controller
         /*         * ************************************************** */
 
         $currencies = DataArrayHelper::currenciesArray();
+        $jobTypes = DataArrayHelper::langJobTypesArray();
+        $jobExperiences = DataArrayHelper::langJobExperiencesArray();
 
         /*         * ************************************************** */
 
@@ -175,6 +185,8 @@ class JobController extends Controller
                         ->with('functionalAreas', $this->functionalAreas)
                         ->with('countries', $this->countries)
                         ->with('currencies', array_unique($currencies))
+                        ->with('jobTypes', $jobTypes)
+                        ->with('jobExperiences', $jobExperiences)
                         ->with('jobs', $jobs)
                         ->with('jobTitlesArray', $jobTitlesArray)
                         ->with('skillIdsArray', $skillIdsArray)

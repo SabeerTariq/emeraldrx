@@ -20,6 +20,8 @@
                 {{__('My Followings')}}
             @elseif(Request::routeIs('build.resume'))
                 {{__('Build Resume')}}
+            @elseif(Request::routeIs('resume'))
+                {{__('Print Resume')}}
             @elseif(Request::routeIs('company.home'))
                 {{__('Dashboard')}}
             @elseif(Request::routeIs('company.profile'))

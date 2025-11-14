@@ -9,7 +9,7 @@ $isDashboardPage = (Auth::check() || Auth::guard('company')->check());
 @if($isDashboardPage === false)
 @include('includes.header') 
 @endif
-<!-- Header end -->
+<!-- Header end --> 
 
 <div class="listpgWraper">
 
@@ -18,7 +18,7 @@ $isDashboardPage = (Auth::check() || Auth::guard('company')->check());
         <div class="row"> @include('includes.company_dashboard_menu')
         <?php $company = auth()->guard('company')->user(); ?>
 
-        <div class="col-md-9 col-sm-8">
+        <div class="col-md-9 col-sm-8 dashboard-content">
             @include('includes.dashboard_content_header') 
             <?php if ($company->is_active == 1 && (($company->package_end_date === null) || 
                 (\Carbon\Carbon::parse($company->package_end_date)->lt(\Carbon\Carbon::now())) || 
@@ -84,13 +84,13 @@ $isDashboardPage = (Auth::check() || Auth::guard('company')->check());
                                 <h4>
                                     <a href="{{route('job.detail', [$job->slug])}}" title="{{$job->title}}">
                                         {!! \Illuminate\Support\Str::limit($job->title, 30, '...') !!}
-                                    </a>
+                                        </a>
                                 </h4>
                                 @if(!(bool)$job->hide_salary && $job->salary_from)                    
                                     <div class="salary mb-2">Salary: 
                                         <strong>{{$job->salary_currency}}{{$job->salary_from}} - {{$job->salary_currency}}{{$job->salary_to}}/{{$job->getSalaryPeriod('salary_period')}}</strong>
-                                    </div>
-                                @endif 
+                        </div>
+                    @endif
                                 <strong><i class="fas fa-map-marker-alt"></i> {{$job->getCity('city')}}</strong>
                                 <div class="jobcompany">
                                     <div class="ftjobcomp">
@@ -103,14 +103,14 @@ $isDashboardPage = (Auth::check() || Auth::guard('company')->check());
                                 </div>
                                 <div class="mt-2">
                                     <a href="{{route('list.applied.users', $job->id)}}" class="btn btn-sm btn-primary">{{__('View Applications')}}</a>
-                                </div>
+                        </div>
                             </div>
-                        </li>
+                                        </li>
                     @endforeach
                 </ul>
             @else
                 <div class="alert alert-info">{{__('No jobs posted yet')}}. <a href="{{route('post.job')}}">{{__('Post your first job')}}</a></div>
-            @endif
+                                @endif
         </div>
 
         <!-- People Applied Section -->
@@ -159,10 +159,10 @@ $isDashboardPage = (Auth::check() || Auth::guard('company')->check());
                             @endforeach
                         </tbody>
                     </table>
-                </div>
+                        </div>
             @else
                 <div class="alert alert-info">{{__('No applications received yet')}}</div>
-            @endif
+                    @endif
         </div>
 
         </div>

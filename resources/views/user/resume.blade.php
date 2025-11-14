@@ -2,6 +2,15 @@
 
 @section('content') 
 
+<!-- Header start -->
+@php
+$isDashboardPage = (Auth::check() || Auth::guard('company')->check());
+@endphp
+@if($isDashboardPage === false)
+@include('includes.header') 
+@endif
+<!-- Header end -->
+
 @push('styles')
    <style>
       .usercvimg img{    width: 150px;
@@ -25,15 +34,6 @@
 
    </style>
 @endpush
-
-<!-- Header start --> 
-
-@include('includes.header') 
-<!-- Header end --> 
-
-<!-- Inner Page Title start --> 
-
-@include('includes.inner_page_title', ['page_title'=>__('Print Resume')]) 
 
 <?php $true = FALSE; ?>
 
@@ -61,24 +61,37 @@ if(null!==($package)){
 
 ?>
 
-<!-- Inner Page Title end -->
-
+@if($isDashboardPage)
 <div class="listpgWraper">
-
+    <div class="container">
+        @include('flash::message')
+        <div class="row">
+            @include('includes.user_dashboard_menu')
+            <div class="col-lg-9 dashboard-content">
+                @include('includes.dashboard_content_header')
+                <div class="resume-content-wrapper">
+@else
+<div class="listpgWraper">
     <div class="container">  
-        @include('flash::message')  
-      <div class="row">
+        @include('flash::message')
+        <div class="resume-content-wrapper">
+@endif
 
-        @include('includes.user_dashboard_menu')
-
-        <div class="col-md-9 col-sm-8" >
-
-        @if(count(auth()->user()->getProfileCvsArray())==0 || count(auth()->user()->profileExperience()->get()) == 0 || count(auth()->user()->profileEducation()->get()) == 0 || count(auth()->user()->profileSkills()->get()) == 0)        
-        @else       
-         <div class="downloadbtn text-end mb-3">
-         <button type="button" onclick="downloadPDF()" class="btn btn-primary"><i class="fas fa-download"></i> Download CV</button>
-         </div>
-         @endif
+        @if($isDashboardPage)
+            @if(count(auth()->user()->getProfileCvsArray())==0 || count(auth()->user()->profileExperience()->get()) == 0 || count(auth()->user()->profileEducation()->get()) == 0 || count(auth()->user()->profileSkills()->get()) == 0)        
+            @else       
+             <div class="downloadbtn text-end mb-3">
+             <button type="button" onclick="downloadPDF()" class="btn btn-primary"><i class="fas fa-download"></i> Download CV</button>
+             </div>
+             @endif
+        @else
+            @if(count(auth()->user()->getProfileCvsArray())==0 || count(auth()->user()->profileExperience()->get()) == 0 || count(auth()->user()->profileEducation()->get()) == 0 || count(auth()->user()->profileSkills()->get()) == 0)        
+            @else       
+             <div class="downloadbtn text-end mb-3">
+             <button type="button" onclick="downloadPDF()" class="btn btn-primary"><i class="fas fa-download"></i> Download CV</button>
+             </div>
+             @endif
+        @endif
 
 
 
@@ -275,25 +288,17 @@ if(null!==($package)){
         </table>
 
     </div>
-
-        <div class="text-center mt-5 mb-5">
-        
-        @if(count(auth()->user()->getProfileCvsArray())==0 || count(auth()->user()->profileExperience()->get()) == 0 || count(auth()->user()->profileEducation()->get()) == 0 || count(auth()->user()->profileSkills()->get()) == 0)
-        <div class="userprofilealert"><h5><i class="fas fa-exclamation-triangle"></i> Your profile is incomplete please update to Download CV.</h5>
-        <div class="editbtbn"><a href="{{ route('my.profile') }}"><i class="fas fa-user-edit"></i> Edit Profile </a></div>	</div>
-        @else       
-         <div class="downloadbtn">
-         <button type="button" onclick="downloadPDF()" class="btn btn-primary"><i class="fas fa-download"></i> Download CV</button>
-         </div>
-         @endif
-
-        </div>  
+                </div>
+@if($isDashboardPage)
+            </div>
+        </div>
+    </div>
 </div>
-
+@else
+        </div>
+    </div>
 </div>
-
-</div>
-</div>
+@endif
 <div class="modal fade" id="sendmessage" role="dialog">
 
     <div class="modal-dialog">
@@ -343,9 +348,6 @@ if(null!==($package)){
     </div>
 
 </div>
-
-@include('includes.footer')
-
 @endsection
 
 @push('styles')

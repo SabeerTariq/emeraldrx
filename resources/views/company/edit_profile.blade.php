@@ -13,7 +13,7 @@ $isDashboardPage = (Auth::check() || Auth::guard('company')->check());
         <div class="row">
             @include('includes.company_dashboard_menu')
 
-            <div class="col-md-9 col-sm-8">
+            <div class="col-md-9 col-sm-8"> 
                 @include('includes.dashboard_content_header')
                 
                         

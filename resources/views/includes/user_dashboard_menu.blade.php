@@ -1,4 +1,4 @@
-<div class="col-lg-3">
+<div class="col-lg-3 dashboard-sidebar">
 	<!-- Dashboard Sidebar Logo -->
 	<div class="dashboard-sidebar-logo">
 		<a href="{{url('/')}}" class="logo">

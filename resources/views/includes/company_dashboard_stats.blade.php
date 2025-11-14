@@ -9,8 +9,8 @@
                     {{Auth::guard('company')->user()->jobs()->count()}}
                 @endif
                 <strong>{{__('Jobs Posted')}}</strong>
-            </h6>
-        </a>
+        </h6>
+</a>
     </li>
     <li class="col-md-6 col-6">
         <a href="#" class="inbox"> 
@@ -27,7 +27,7 @@
                     {{ $appCount }}
                 @endif
                 <strong>{{__('People Applied')}}</strong>
-            </h6>
-        </a>
+        </h6>
+</a>
     </li>
 </ul>

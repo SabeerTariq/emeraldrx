@@ -4,331 +4,271 @@
 @include('includes.header') 
 <!-- Header end --> 
 
-
-@include('includes.inner_top_search')
 @include('flash::message')
 
 @php
 $company = $job->getCompany();
 @endphp
 
-
-
-
-
-
-<div class="listpgWraper">
-    <div class="container"> 
-        @include('flash::message')
-       
-
-    <div class="row jobPagetitle">
-            <div class="col-lg-8">
-                <div class="jobinfo">
-                    <h2>{{$job->title}}</h2>
-                    <div class="ptext">{{__('Date Posted')}}: {{$job->created_at->format('M d, Y')}}</div>
-                    
-                    @if(!(bool)$job->hide_salary)
-                    <div class="salary">{{$job->getSalaryPeriod('salary_period')}}: <strong>{{$job->salary_currency.' '.$job->salary_from}} - {{$job->salary_currency.' '.$job->salary_to}}</strong></div>
+<div class="listpgWraper applicant-profile-wrapper">
+    <div class="container applicant-profile-container">  
+        @include('flash::message')  
+        
+        <!-- Job Profile start -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-xl-8">    
+                <!-- Cover Image -->
+                <div class="usercoverimg">
+                    @if(!empty($company->logo))
+                        <img src="{{ asset('company_logos/'.$company->logo) }}" alt="{{$company->name}}" style="width: 100%; height: 100%; object-fit: cover;">
+                    @else
+                        <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 24px; font-weight: bold;">
+                            {{$company->name}}
+                        </div>
                     @endif
                 </div>
-            </div>
-            <div class="col-lg-4">
 
-            <div class="jobButtons applybox">
-            @if($job->isJobExpired())
-                <span class="jbexpire"><i class="fas fa-paper-plane" aria-hidden="true"></i> {{__('Job is expired')}}</span>
-                @elseif(Auth::check() && Auth::user()->isAppliedOnJob($job->id))
-                    <a href="javascript:;" class="btn apply applied"><i class="fas fa-paper-plane" aria-hidden="true"></i> {{__('Already Applied')}}</a>
-                @else
-                    @if(!Auth::check())
-                        @if($job->application_url != '')
-                            <a href="{{route('job.apply', $job->slug)}}" class="btn apply"><i class="fas fa-paper-plane" aria-hidden="true"></i> {{__('Apply Now')}}</a>
-                        @else
-                            <a href="{{route('apply.job', $job->slug)}}" class="btn apply"><i class="fas fa-paper-plane" aria-hidden="true"></i> {{__('Apply Now')}}</a>
+                <!-- Main Info Section -->
+                <div class="userMaininfo">                
+                    <div class="userPic">
+                        <a href="{{route('company.detail',$company->slug)}}">{{$company->printCompanyImage()}}</a>
+                    </div>					
+                    <div class="title">
+                        <h3>{{$job->title}} <span>({{$company->name}})</span></h3>
+                        <div class="desi"><i class="fa fa-map-marker" aria-hidden="true"></i> @if((bool)$job->is_freelance) {{__('Freelance')}} @else {{$job->getLocation()}} @endif</div>
+                        <div class="membersinc"><i class="far fa-calendar" aria-hidden="true"></i> {{__('Date Posted')}}: {{$job->created_at->format('M d, Y')}}</div>
+                        @if(!(bool)$job->hide_salary)
+                        <div class="membersinc" style="color: #27bcbb; font-weight: 600;"><i class="fas fa-dollar-sign" aria-hidden="true"></i> {{$job->getSalaryPeriod('salary_period')}}: {{$job->salary_currency.' '.number_format($job->salary_from)}} - {{$job->salary_currency.' '.number_format($job->salary_to)}}</div>
                         @endif
-                    @else
-                        @php
-                            $user = Auth::user();
-                            $profileIncomplete = count($user->getProfileProjectsArray()) == 0 ||
-                                                count($user->getProfileCvsArray()) == 0 ||
-                                                count($user->profileExperience()->get()) == 0 ||
-                                                count($user->profileEducation()->get()) == 0 ||
-                                                count($user->profileSkills()->get()) == 0;
-                        @endphp
+                    </div>
+                </div>
 
-                        @if($profileIncomplete)
-                            <a href="{{ route('my.profile') }}" class="btn apply"><i class="fas fa-exclamation-circle" aria-hidden="true"></i> {{__('Complete your profile to apply')}}</a>
-                        @else
+                <!-- Action Buttons -->
+                <div class="userlinkstp">  
+                    @if($job->isJobExpired())
+                        <button class="btn" disabled style="background: #999; cursor: not-allowed;"><i class="fas fa-exclamation-circle"></i> {{__('Job is expired')}}</button>
+                    @elseif(Auth::check() && Auth::user()->isAppliedOnJob($job->id))
+                        <button class="btn" disabled style="background: #28a745; cursor: not-allowed;"><i class="fas fa-check-circle"></i> {{__('Already Applied')}}</button>
+                    @else
+                        @if(!Auth::check())
                             @if($job->application_url != '')
-                                <a href="{{route('job.apply', $job->slug)}}" class="btn apply"><i class="fas fa-paper-plane" aria-hidden="true"></i> {{__('Apply Now')}}</a>
+                                <a href="{{route('job.apply', $job->slug)}}" class="btn"><i class="fas fa-paper-plane"></i> {{__('Apply Now')}}</a>
                             @else
-                                <a href="{{route('apply.job', $job->slug)}}" class="btn apply"><i class="fas fa-paper-plane" aria-hidden="true"></i> {{__('Apply Now')}}</a>
+                                <a href="{{route('apply.job', $job->slug)}}" class="btn"><i class="fas fa-paper-plane"></i> {{__('Apply Now')}}</a>
+                            @endif
+                        @else
+                            @php
+                                $user = Auth::user();
+                                $profileIncomplete = count($user->getProfileProjectsArray()) == 0 ||
+                                                    count($user->getProfileCvsArray()) == 0 ||
+                                                    count($user->profileExperience()->get()) == 0 ||
+                                                    count($user->profileEducation()->get()) == 0 ||
+                                                    count($user->profileSkills()->get()) == 0;
+                            @endphp
+
+                            @if($profileIncomplete)
+                                <a href="{{ route('my.profile') }}" class="btn" style="background: #ffc107; color: #333;"><i class="fas fa-exclamation-circle"></i> {{__('Complete your profile to apply')}}</a>
+                            @else
+                                @if($job->application_url != '')
+                                    <a href="{{route('job.apply', $job->slug)}}" class="btn"><i class="fas fa-paper-plane"></i> {{__('Apply Now')}}</a>
+                                @else
+                                    <a href="{{route('apply.job', $job->slug)}}" class="btn"><i class="fas fa-paper-plane"></i> {{__('Apply Now')}}</a>
+                                @endif
                             @endif
                         @endif
                     @endif
-                @endif
 
-				</div>
+                    <a href="{{route('email.to.friend', $job->slug)}}" class="btn"><i class="fas fa-envelope"></i> {{__('Email to Friend')}}</a>
+                    @if(Auth::check() && Auth::user()->isFavouriteJob($job->slug))
+                        <a href="{{route('remove.from.favourite', $job->slug)}}" class="btn"><i class="fas fa-heart"></i> {{__('Remove From Favourite')}}</a>
+                    @else
+                        <a href="{{route('add.to.favourite', $job->slug)}}" class="btn"><i class="far fa-heart"></i> {{__('Add to Favourite')}}</a>
+                    @endif
+                    <a href="{{route('report.abuse', $job->slug)}}" class="btn report"><i class="fas fa-exclamation-triangle"></i> {{__('Report Abuse')}}</a>
+                </div>
 
-            </div>
-       </div>
-
-
-
-
-        <!-- Job Detail start -->
-        <div class="row">
-            <div class="col-lg-7"> 
-				
-				 <!-- Job Header start -->
-        <div class="job-header">
-           
-			
-			<!-- Job Detail start -->
-                <div class="jobmainreq">
-                    <div class="jobdetail">
-                       <h3><i class="fa fa-align-left" aria-hidden="true"></i> {{__('Job Detail')}}</h3>
-						
-							
-                       <ul class="jbdetail row">
-                                <li class="col-lg-4 col-md-6 col-6">
-                                    <div class="jbitlist">
-                                    <span class="material-symbols-outlined">location_on</span>
-                                    <div class="jbitdata">
-                                        <strong>{{__('Location')}}</strong>
-                                        @if((bool)$job->is_freelance)
-                                        <span>Freelance</span>
-                                        @else
-                                        <span>{{$job->getLocation()}}</span>
-                                        @endif
-                                    </div>
-                                    </div>
-                                </li>
-                               
-                                <li class="col-lg-4 col-md-6 col-6">
-                                    <div class="jbitlist"> 
-                                    <span class="material-symbols-outlined">desktop_windows</span>                                    
-                                    <div class="jbitdata">
-                                        <strong>{{__('Job Type')}}:</strong>
-                                        <span>{{$job->getJobType('job_type')}}</span>
-                                    </div>
-                                    </div>
-                                </li>
-                                <li class="col-lg-4 col-md-6 col-6">
-                                    <div class="jbitlist"> 
-                                    <span class="material-symbols-outlined">schedule</span>                                                                          
-                                    <div class="jbitdata">
-                                        <strong>{{__('Shift')}}:</strong>
-                                        <span>{{$job->getJobShift('job_shift')}}</span>
-                                    </div>
-                                    </div>
-                                </li>
-                                <li class="col-lg-4 col-md-6 col-6">
-                                    <div class="jbitlist">
-                                    <span class="material-symbols-outlined">analytics</span>
-                                    <div class="jbitdata">
-                                        <strong>{{__('Career Level')}}:</strong>                                        
-                                        <span>{{$job->getCareerLevel('career_level')}}</span>
-                                    </div>
-                                    </div>
-                                </li>
-                                <li class="col-lg-4 col-md-6 col-6">
-                                    <div class="jbitlist">
-                                    <span class="material-symbols-outlined">group</span>
-                                    <div class="jbitdata">
-                                        <strong>{{__('Positions')}}:</strong>
-                                        <span>{{$job->num_of_positions}}</span>
-                                    </div>
-                                    </div>
-                                </li>
-                                <li class="col-lg-4 col-md-6 col-6">
-                                    <div class="jbitlist">
-                                    <span class="material-symbols-outlined">calendar_view_day</span>
-                                    <div class="jbitdata">
-                                        <strong>{{__('Experience')}}:</strong>    
-                                        <span>{{$job->getJobExperience('job_experience')}}</span>
-                                    </div>
-                                    </div>
-                                </li>
-                                <li class="col-lg-4 col-md-6 col-6">
-                                    <div class="jbitlist">
-                                    <span class="material-symbols-outlined">male</span>
-                                    <div class="jbitdata">
-                                        <strong>{{__('Gender')}}:</strong>
-                                        <span>{{$job->getGender('gender')}}</span></div>
-                                    </div>
-                                </li>
-                                <li class="col-lg-4 col-md-6 col-6">
-                                    <div class="jbitlist">
-                                    <span class="material-symbols-outlined">school</span>
-                                    <div class="jbitdata">
-                                        <strong>{{__('Degree')}}:</strong>
-                                        <span>{{$job->getDegreeLevel('degree_level')}}</span></div>
-                                    </div>
-                                </li>
-                                <li class="col-lg-4 col-md-6 col-6">
-                                    <div class="jbitlist">
-                                    <span class="material-symbols-outlined">calendar_month</span>
-                                    <div class="jbitdata">
-                                        <strong>{{__('Apply Before')}}:</strong>
-                                        <span>{{ \Carbon\Carbon::parse($job->expiry_date)->format('M d, Y') }}</span></div>
-                                    </div>
-                                </li> 
-                                
-                            </ul>
-							
-							
-                       
+                <!-- Job Details -->
+                <div class="userdetailbox">
+                    <h3>{{__('Job Details')}}</h3>
+                    <div class="job-details-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
+                        <div class="job-detail-item" style="display: flex; align-items: flex-start; gap: 15px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                            <div class="detail-icon" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: #e8f4f8; border-radius: 10px; color: #27bcbb; font-size: 20px; flex-shrink: 0;"><i class="fas fa-map-marker-alt"></i></div>
+                            <div class="detail-content" style="flex: 1;">
+                                <span class="detail-label" style="font-size: 12px; color: #777; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; display: block; margin-bottom: 5px;">{{__('Location')}}</span>
+                                <span class="detail-value" style="font-size: 15px; color: #333; font-weight: 600;">@if((bool)$job->is_freelance) {{__('Freelance')}} @else {{$job->getLocation()}} @endif</span>
+                            </div>
+                        </div>
+                        
+                        <div class="job-detail-item" style="display: flex; align-items: flex-start; gap: 15px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                            <div class="detail-icon" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: #e8f4f8; border-radius: 10px; color: #27bcbb; font-size: 20px; flex-shrink: 0;"><i class="fas fa-briefcase"></i></div>
+                            <div class="detail-content" style="flex: 1;">
+                                <span class="detail-label" style="font-size: 12px; color: #777; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; display: block; margin-bottom: 5px;">{{__('Job Type')}}</span>
+                                <span class="detail-value" style="font-size: 15px; color: #333; font-weight: 600;">{{$job->getJobType('job_type')}}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="job-detail-item" style="display: flex; align-items: flex-start; gap: 15px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                            <div class="detail-icon" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: #e8f4f8; border-radius: 10px; color: #27bcbb; font-size: 20px; flex-shrink: 0;"><i class="fas fa-clock"></i></div>
+                            <div class="detail-content" style="flex: 1;">
+                                <span class="detail-label" style="font-size: 12px; color: #777; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; display: block; margin-bottom: 5px;">{{__('Shift')}}</span>
+                                <span class="detail-value" style="font-size: 15px; color: #333; font-weight: 600;">{{$job->getJobShift('job_shift')}}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="job-detail-item" style="display: flex; align-items: flex-start; gap: 15px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                            <div class="detail-icon" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: #e8f4f8; border-radius: 10px; color: #27bcbb; font-size: 20px; flex-shrink: 0;"><i class="fas fa-chart-line"></i></div>
+                            <div class="detail-content" style="flex: 1;">
+                                <span class="detail-label" style="font-size: 12px; color: #777; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; display: block; margin-bottom: 5px;">{{__('Career Level')}}</span>
+                                <span class="detail-value" style="font-size: 15px; color: #333; font-weight: 600;">{{$job->getCareerLevel('career_level')}}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="job-detail-item" style="display: flex; align-items: flex-start; gap: 15px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                            <div class="detail-icon" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: #e8f4f8; border-radius: 10px; color: #27bcbb; font-size: 20px; flex-shrink: 0;"><i class="fas fa-users"></i></div>
+                            <div class="detail-content" style="flex: 1;">
+                                <span class="detail-label" style="font-size: 12px; color: #777; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; display: block; margin-bottom: 5px;">{{__('Positions')}}</span>
+                                <span class="detail-value" style="font-size: 15px; color: #333; font-weight: 600;">{{$job->num_of_positions}}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="job-detail-item" style="display: flex; align-items: flex-start; gap: 15px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                            <div class="detail-icon" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: #e8f4f8; border-radius: 10px; color: #27bcbb; font-size: 20px; flex-shrink: 0;"><i class="fas fa-calendar-alt"></i></div>
+                            <div class="detail-content" style="flex: 1;">
+                                <span class="detail-label" style="font-size: 12px; color: #777; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; display: block; margin-bottom: 5px;">{{__('Experience')}}</span>
+                                <span class="detail-value" style="font-size: 15px; color: #333; font-weight: 600;">{{$job->getJobExperience('job_experience')}}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="job-detail-item" style="display: flex; align-items: flex-start; gap: 15px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                            <div class="detail-icon" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: #e8f4f8; border-radius: 10px; color: #27bcbb; font-size: 20px; flex-shrink: 0;"><i class="fas fa-venus-mars"></i></div>
+                            <div class="detail-content" style="flex: 1;">
+                                <span class="detail-label" style="font-size: 12px; color: #777; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; display: block; margin-bottom: 5px;">{{__('Gender')}}</span>
+                                <span class="detail-value" style="font-size: 15px; color: #333; font-weight: 600;">{{$job->getGender('gender')}}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="job-detail-item" style="display: flex; align-items: flex-start; gap: 15px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                            <div class="detail-icon" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: #e8f4f8; border-radius: 10px; color: #27bcbb; font-size: 20px; flex-shrink: 0;"><i class="fas fa-graduation-cap"></i></div>
+                            <div class="detail-content" style="flex: 1;">
+                                <span class="detail-label" style="font-size: 12px; color: #777; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; display: block; margin-bottom: 5px;">{{__('Degree')}}</span>
+                                <span class="detail-value" style="font-size: 15px; color: #333; font-weight: 600;">{{$job->getDegreeLevel('degree_level')}}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="job-detail-item" style="display: flex; align-items: flex-start; gap: 15px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                            <div class="detail-icon" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: #e8f4f8; border-radius: 10px; color: #27bcbb; font-size: 20px; flex-shrink: 0;"><i class="far fa-calendar-check"></i></div>
+                            <div class="detail-content" style="flex: 1;">
+                                <span class="detail-label" style="font-size: 12px; color: #777; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; display: block; margin-bottom: 5px;">{{__('Apply Before')}}</span>
+                                <span class="detail-value" style="font-size: 15px; color: #333; font-weight: 600;">{{ \Carbon\Carbon::parse($job->expiry_date)->format('M d, Y') }}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-			
-			
-            <div class="jobButtons">
-                <a href="{{route('email.to.friend', $job->slug)}}" class="btn"><i class="fas fa-envelope" aria-hidden="true"></i> {{__('Email to Friend')}}</a>
-                @if(Auth::check() && Auth::user()->isFavouriteJob($job->slug)) <a href="{{route('remove.from.favourite', $job->slug)}}" class="btn"><i class="fas fa-floppy" aria-hidden="true"></i> {{__('Remove From Favourite Job')}} <i class="fas fa-times"></i></a> @else <a href="{{route('add.to.favourite', $job->slug)}}" class="btn"><i class="fas fa-floppy"></i> {{__('Add to Favourite')}}</a> @endif
-                <a href="{{route('report.abuse', $job->slug)}}" class="btn report"><i class="fas fa-exclamation-triangle" aria-hidden="true"></i> {{__('Report Abuse')}}</a>
-                </div>
-            </div>
-				
-				
-				
-                <!-- Job Description start -->
-                <div class="job-header">
-                    <div class="contentbox">
-                        <h3><i class="fas fa-file-text" aria-hidden="true"></i> {{__('Job Description')}}</h3>
-                        <p>{!! $job->description !!}</p>                       
-                    </div>
-                </div>
-				
-				@if (!empty($job->benefits))
-				<div class="job-header benefits">
-                    <div class="contentbox">
-                        <h3><i class="fa fa-file-text" aria-hidden="true"></i> {{__('Benefits')}}</h3>
-                        <p>{!! $job->benefits !!}</p>                       
-                    </div>
-                </div>
-                @endif
-				
-				<div class="job-header">
-                    <div class="contentbox">                        
-                        <h3><i class="fas fa-puzzle-piece" aria-hidden="true"></i> {{__('Skills Required')}}</h3>
-                        <ul class="skillslist">
-                            {!!$job->getJobSkillsList()!!}
-                        </ul>
-                    </div>
-                </div>
-				
-				
-                <!-- Job Description end --> 
-
                 
+                <!-- Job Description -->
+                <div class="userdetailbox">
+                    <h3>{{__('Job Description')}}</h3>
+                    <div class="job-content-body">
+                        {!! $job->description !!}
+                    </div>
+                </div>
+                
+                <!-- Benefits -->
+                @if (!empty($job->benefits))
+                <div class="userdetailbox">
+                    <h3>{{__('Benefits')}}</h3>
+                    <div class="job-content-body">
+                        {!! $job->benefits !!}
+                    </div>
+                </div>
+                @endif
+                
+                <!-- Skills Required -->
+                <div class="userdetailbox">
+                    <h3>{{__('Skills Required')}}</h3>
+                    <div class="job-skills-list">
+                        {!!$job->getJobSkillsList()!!}
+                    </div>
+                </div>
             </div>
-            <!-- related jobs end -->
 
-            <div class="col-lg-5"> 
-				
-				
-				
-				<div class="companyinfo">
-					<h3><i class="fas fa-building" aria-hidden="true"></i> {{__('Company Overview')}}</h3>
-                            <div class="companylogo"><a href="{{route('company.detail',$company->slug)}}">{{$company->printCompanyImage()}}</a></div>
-                            <div class="title"><a href="{{route('company.detail',$company->slug)}}">{{$company->name}}</a></div>
-                            <div class="ptext">{{$company->getLocation()}}</div>
-                            <div class="opening">
-                                <a href="{{route('company.detail',$company->slug)}}">
-                                    {{App\Company::countNumJobs('company_id', $company->id)}} {{__('Current Jobs Openings')}}
+            <!-- Right Column: Sidebar -->
+            <div class="col-lg-4 col-xl-8"> 
+                <!-- Company Info Card -->
+                <div class="job-header">
+                    <div class="jobdetail">
+                        <h3>{{__('Company Overview')}}</h3>
+                        <div class="candidateinfo" style="text-align: center; margin-bottom: 20px;">
+                            <div style="margin-bottom: 15px;">
+                                <a href="{{route('company.detail',$company->slug)}}">{{$company->printCompanyImage()}}</a>
+                            </div>
+                            <h4 style="margin-bottom: 10px;"><a href="{{route('company.detail',$company->slug)}}" style="color: #333; text-decoration: none;">{{$company->name}}</a></h4>
+                            <p style="color: #666; margin-bottom: 15px;"><i class="fas fa-map-marker-alt"></i> {{$company->getLocation()}}</p>
+                            <div style="margin-bottom: 15px;">
+                                <a href="{{route('company.detail',$company->slug)}}" style="color: #27bcbb; font-weight: 600; text-decoration: none;">
+                                    <i class="fas fa-briefcase"></i> {{App\Company::countNumJobs('company_id', $company->id)}} {{__('Current Jobs Openings')}}
                                 </a>
                             </div>
-                            <div class="clearfix"></div>
-					<hr>
-				<div class="companyoverview">
-				
-					<p>{{\Illuminate\Support\Str::limit(strip_tags($company->description), 250, '...')}} <a href="{{route('company.detail',$company->slug)}}">Read More</a></p>
-					</div>
                         </div>
-				
-			<!-- Google Map start -->
-            <div class="job-header">
-                    <div class="jobdetail">
-                        <h3><i class="fas fa-map-marker" aria-hidden="true"></i> {{__('Google Map')}}</h3>
-                        <div class="gmap">
-                            <iframe src="https://maps.google.it/maps?q={{urlencode(strip_tags($company->map))}}&output=embed" allowfullscreen></iframe>
+                        <div style="text-align: left; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
+                            <p style="color: #555; font-size: 14px; line-height: 1.8; margin-bottom: 0;">{{\Illuminate\Support\Str::limit(strip_tags($company->description), 200, '...')}} <a href="{{route('company.detail',$company->slug)}}" style="color: #27bcbb; font-weight: 600; text-decoration: none;">Read More</a></p>
                         </div>
                     </div>
                 </div>
-				
-			
-            
-               
+                
+                <!-- Google Map Card -->
+                @if(!empty($company->map))
+                <div class="userdetailbox profileproject">
+                    <h3>{{__('Location Map')}}</h3>
+                    <iframe src="https://maps.google.it/maps?q={{urlencode(strip_tags($company->map))}}&output=embed" allowfullscreen style="width: 100%; height: 400px; border-radius: 8px;"></iframe>
+                </div>
+                @endif
             </div>
         </div>
-
-
-
-
-	<!-- related jobs start -->
-    <div class="relatedJobs">
-        <h3 class="mb-0">{{__('Related Jobs')}}</h3>
-        <ul class="featuredlist row">
-            @if(isset($relatedJobs) && count($relatedJobs))
-            @foreach($relatedJobs as $relatedJob)
-            <?php $relatedJobCompany = $relatedJob->getCompany(); ?>
-            @if(null !== $relatedJobCompany)
-            <!--Job start-->
-            <li class="col-lg-3 col-md-6">
-                <div class="jobint">
-
-                    <div class="d-flex">
-                        <div class="fticon"><i class="fas fa-briefcase"></i> {{$relatedJob->getJobType('job_type')}}</div>                        
-                    </div>
-                    <h4><a href="{{route('job.detail', [$relatedJob->slug])}}" title="{{$relatedJob->title}}">{!! \Illuminate\Support\Str::limit($relatedJob->title, $limit = 20, $end = '...') !!}</a>
-                    </h4>
-                    @if(!(bool)$relatedJob->hide_salary)                    
-                    <div class="salary mb-2">Salary: <strong>{{$relatedJob->salary_currency.''.$relatedJob->salary_from}} - {{$relatedJob->salary_currency.''.$relatedJob->salary_to}}/{{$relatedJob->getSalaryPeriod('salary_period')}}</strong></div>
-                    @endif 
-                    <strong><i class="fas fa-map-marker-alt"></i> {{$relatedJob->getCity('city')}}</strong>                     
-                    <div class="jobcompany">
-                     <div class="ftjobcomp">
-                        <span>{{$relatedJob->created_at->format('M d, Y')}}</span>
-                        <a href="{{route('company.detail', $relatedJobCompany->slug)}}" title="{{$company->name}}">{{$company->name}}</a>
-                     </div>
-                    <a href="{{route('company.detail', $relatedJobCompany->slug)}}" class="company-logo" title="{{$company->name}}">{{$company->printCompanyImage()}} </a>
-                    </div>
-                </div>
-            </li>
-        
-            <!--Job end--> 
-            @endif
-            @endforeach
-            @else
-    <div class="nodatabox">
-    <h4>{{__('There are currently no open positions available.')}}</h4>
-    <div class="viewallbtn mt-2"><a href="{{url('/search-jobs')}}">{{__('Search Jobs')}}</a></div>
-</div>
-            @endif
-
-            <!-- Job end -->
-        </ul>
     </div>
-                
-
-
-
-
-
-    </div>
-
-
-
 </div>
+
 @include('includes.footer')
 @endsection
+
 @push('styles')
 <style type="text/css">
     .view_more{display:none !important;}
+    .job-skills-list ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .job-skills-list ul li {
+        display: inline-block;
+        margin: 0;
+        padding: 0;
+    }
+    .job-skills-list ul li a {
+        display: inline-block;
+        background: #f0f4f8;
+        color: #555;
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: 1px solid #e0e6ed;
+    }
+    .job-skills-list ul li a:hover {
+        background: #27bcbb;
+        color: #fff;
+        border-color: #27bcbb;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(39, 188, 187, 0.3);
+    }
 </style>
 @endpush
+
 @push('scripts') 
 <script>
     $(document).ready(function ($) {
@@ -345,13 +285,9 @@ $company = $job->getCompany();
             {
                 $(this).css('height', 100);
                 $(this).css('overflow', 'hidden');
-                //alert($( this ).next());
                 $(this).next().removeClass('view_more');
             }
         });
-
-
-
     });
 </script> 
 @endpush
