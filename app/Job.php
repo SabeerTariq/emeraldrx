@@ -22,7 +22,7 @@ class Job extends Model
     public $timestamps = true;
     protected $guarded = ['id'];
     //protected $dateFormat = 'U';
-    protected $dates = ['created_at', 'updated_at', 'expiry_date'];
+    protected $dates = ['created_at', 'updated_at'];
 
     public function company()
     {
@@ -102,17 +102,8 @@ class Job extends Model
 
     public function getFunctionalArea($field = '')
     {
-        $functionalArea = $this->functionalArea()->lang()->first();
-        if (null === $functionalArea) {
-            $functionalArea = $this->functionalArea()->first();
-        }
-        if (null !== $functionalArea) {
-            if (!empty($field)) {
-                return $functionalArea->$field;
-            } else {
-                return $functionalArea;
-            }
-        }
+        // functional_area_id field has been removed
+        return null;
     }
 
     public function jobType()
@@ -122,17 +113,8 @@ class Job extends Model
 
     public function getJobType($field = '')
     {
-        $jobType = $this->jobType()->lang()->first();
-        if (null === $jobType) {
-            $jobType = $this->jobType()->first();
-        }
-        if (null !== $jobType) {
-            if (!empty($field)) {
-                return $jobType->$field;
-            } else {
-                return $jobType;
-            }
-        }
+        // job_type_id is now a text field, return it directly
+        return $this->job_type_id ? $this->job_type_id : '';
     }
 
     public function jobShift()
@@ -142,17 +124,8 @@ class Job extends Model
 
     public function getJobShift($field = '')
     {
-        $jobShift = $this->jobShift()->lang()->first();
-        if (null === $jobShift) {
-            $jobShift = $this->jobShift()->first();
-        }
-        if (null !== $jobShift) {
-            if (!empty($field)) {
-                return $jobShift->$field;
-            } else {
-                return $jobShift;
-            }
-        }
+        // job_shift_id is now a text field, return it directly
+        return $this->job_shift_id ? $this->job_shift_id : '';
     }
 
     public function salaryPeriod()
@@ -204,17 +177,8 @@ class Job extends Model
 
     public function getDegreeLevel($field = '')
     {
-        $degreeLevel = $this->degreeLevel()->lang()->first();
-        if (null === $degreeLevel) {
-            $degreeLevel = $this->degreeLevel()->first();
-        }
-        if (null !== $degreeLevel) {
-            if (!empty($field)) {
-                return $degreeLevel->$field;
-            } else {
-                return $degreeLevel;
-            }
-        }
+        // degree_level_id field has been removed
+        return null;
     }
 
     public function jobExperience()

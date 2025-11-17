@@ -142,7 +142,7 @@ class JobController extends Controller
 
         /*         * ************************************************** */
 
-        $functionalAreaIdsArray = $this->fetchIdsArray($search, $job_titles, $company_ids, $industry_ids, $job_skill_ids, $functional_area_ids, $country_ids, $state_ids, $city_ids, $is_freelance, $career_level_ids, $job_type_ids, $job_shift_ids, $gender_ids, $degree_level_ids, $job_experience_ids, $salary_from, $salary_to, $salary_currency, $is_featured, 'jobs.functional_area_id');
+        $functionalAreaIdsArray = array(); // functional_area_id field has been removed
 
         /*         * ************************************************** */
 
@@ -162,7 +162,7 @@ class JobController extends Controller
 
         /*         * ************************************************** */
 
-        $degreeLevelIdsArray = $this->fetchIdsArray($search, $job_titles, $company_ids, $industry_ids, $job_skill_ids, $functional_area_ids, $country_ids, $state_ids, $city_ids, $is_freelance, $career_level_ids, $job_type_ids, $job_shift_ids, $gender_ids, $degree_level_ids, $job_experience_ids, $salary_from, $salary_to, $salary_currency, $is_featured, 'jobs.degree_level_id');
+        $degreeLevelIdsArray = array(); // degree_level_id field has been removed
 
         /*         * ************************************************** */
 
@@ -216,16 +216,16 @@ class JobController extends Controller
         $company_ids = array();
         $industry_ids = array();
         $job_skill_ids = (array) $job->getJobSkillsArray();
-        $functional_area_ids = (array) $job->getFunctionalArea('functional_area_id');
+        $functional_area_ids = array(); // Removed field
         $country_ids = (array) $job->getCountry('country_id');
         $state_ids = (array) $job->getState('state_id');
         $city_ids = (array) $job->getCity('city_id');
         $is_freelance = $job->is_freelance;
         $career_level_ids = (array) $job->getCareerLevel('career_level_id');
-        $job_type_ids = (array) $job->getJobType('job_type_id');
-        $job_shift_ids = (array) $job->getJobShift('job_shift_id');
+        $job_type_ids = $job->job_type_id ? (array) $job->job_type_id : array();
+        $job_shift_ids = $job->job_shift_id ? (array) $job->job_shift_id : array();
         $gender_ids = (array) $job->getGender('gender_id');
-        $degree_level_ids = (array) $job->getDegreeLevel('degree_level_id');
+        $degree_level_ids = array(); // Removed field
         $job_experience_ids = (array) $job->getJobExperience('job_experience_id');
         $salary_from = 0;
         $salary_to = 0;
@@ -237,7 +237,7 @@ class JobController extends Controller
         $relatedJobs = $this->fetchJobs($search, $job_titles, $company_ids, $industry_ids, $job_skill_ids, $functional_area_ids, $country_ids, $state_ids, $city_ids, $is_freelance, $career_level_ids, $job_type_ids, $job_shift_ids, $gender_ids, $degree_level_ids, $job_experience_ids, $salary_from, $salary_to, $salary_currency, $is_featured, $order_by, $limit);
         /*         * ***************************************** */
 
-        $seoArray = $this->getSEO((array) $job->functional_area_id, (array) $job->country_id, (array) $job->state_id, (array) $job->city_id, (array) $job->career_level_id, (array) $job->job_type_id, (array) $job->job_shift_id, (array) $job->gender_id, (array) $job->degree_level_id, (array) $job->job_experience_id);
+        $seoArray = $this->getSEO(array(), (array) $job->country_id, (array) $job->state_id, (array) $job->city_id, (array) $job->career_level_id, (array) $job->job_type_id, (array) $job->job_shift_id, (array) $job->gender_id, array(), (array) $job->job_experience_id);
         /*         * ************************************************** */
         $seo = (object) array(
                     'seo_title' => $job->title,

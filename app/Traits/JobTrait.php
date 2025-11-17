@@ -134,17 +134,11 @@ trait JobTrait
 
         $str .= ((bool) $job->hide_salary === false) ? ' ' . $job->salary_from . ' ' . $job->salary_to : '';
 
-        $str .= $job->getSalaryPeriod('salary_period');
+        $str .= ' ' . ($job->job_type_id ? $job->job_type_id : '');
 
-        $str .= ' ' . $job->getFunctionalArea('functional_area');
-
-        $str .= ' ' . $job->getJobType('job_type');
-
-        $str .= ' ' . $job->getJobShift('job_shift');
+        $str .= ' ' . ($job->job_shift_id ? $job->job_shift_id : '');
 
         $str .= ' ' . $job->getGender('gender');
-
-        $str .= ' ' . $job->getDegreeLevel('degree_level');
 
         $str .= ' ' . $job->getJobExperience('job_experience');
 
@@ -182,11 +176,10 @@ trait JobTrait
 
         $job->salary_to = (int) $request->input('salary_to');
 
-        $job->salary_currency = $request->input('salary_currency');
+        $job->salary_currency = $request->input('salary_currency', '$');
+        $job->salary_period_id = $request->input('salary_period_id', 1);
 
         $job->hide_salary = $request->input('hide_salary');
-
-        $job->functional_area_id = $request->input('functional_area_id');
 
         $job->job_type_id = $request->input('job_type_id');
 
@@ -196,13 +189,7 @@ trait JobTrait
 
         $job->gender_id = $request->input('gender_id');
 
-        $job->expiry_date = $request->input('expiry_date');
-
-        $job->degree_level_id = $request->input('degree_level_id');
-
         $job->job_experience_id = $request->input('job_experience_id');
-
-        $job->salary_period_id = $request->input('salary_period_id');
         $job->external_job = $request->input('external_job', 'no');
         $job->job_link = $request->input('job_link');
 
@@ -679,7 +666,7 @@ trait JobTrait
         $job = Job::findOrFail($id);
         
         // Check if the job was expired before the update
-        $wasExpired = $job->expiry_date && $job->expiry_date < now();
+        $wasExpired = $job->is_expired == 1;
 
 		$job = $this->assignJobValues($job, $request);
 
@@ -723,48 +710,42 @@ trait JobTrait
     {
         if (!empty($value)) {
             if ($field == 'title') {
-                return DB::table('jobs')->where('title', 'like', $value)->where('is_active', '=', 1)->where('expiry_date', '>',  \Carbon\Carbon::now())->count('id');
+                return DB::table('jobs')->where('title', 'like', $value)->where('is_active', '=', 1)->where('is_expired', '=', 0)->count('id');
             }
             if ($field == 'company_id') {
-                return DB::table('jobs')->where('company_id', '=', $value)->where('is_active', '=', 1)->where('expiry_date', '>',  \Carbon\Carbon::now())->count('id');
+                return DB::table('jobs')->where('company_id', '=', $value)->where('is_active', '=', 1)->where('is_expired', '=', 0)->count('id');
             }
             if ($field == 'industry_id') {
                 $company_ids = Company::where('industry_id', '=', $value)->where('is_active', '=', 1)->pluck('id')->toArray();
-                return DB::table('jobs')->whereIn('company_id', $company_ids)->where('is_active', '=', 1)->where('expiry_date', '>',  \Carbon\Carbon::now())->count('id');
+                return DB::table('jobs')->whereIn('company_id', $company_ids)->where('is_active', '=', 1)->where('is_expired', '=', 0)->count('id');
             }
             if ($field == 'job_skill_id') {
                 $job_ids = JobSkillManager::where('job_skill_id', '=', $value)->pluck('job_id')->toArray();
-                return DB::table('jobs')->whereIn('id', array_unique($job_ids))->where('is_active', '=', 1)->where('expiry_date', '>',  \Carbon\Carbon::now())->count('id');
-            }
-            if ($field == 'functional_area_id') {
-                return DB::table('jobs')->where('functional_area_id', '=', $value)->where('is_active', '=', 1)->where('expiry_date', '>',  \Carbon\Carbon::now())->count('id');
+                return DB::table('jobs')->whereIn('id', array_unique($job_ids))->where('is_active', '=', 1)->where('is_expired', '=', 0)->count('id');
             }
             if ($field == 'careel_level_id') {
-                return DB::table('jobs')->where('careel_level_id', '=', $value)->where('is_active', '=', 1)->where('expiry_date', '>',  \Carbon\Carbon::now())->count('id');
+                return DB::table('jobs')->where('careel_level_id', '=', $value)->where('is_active', '=', 1)->where('is_expired', '=', 0)->count('id');
             }
             if ($field == 'job_type_id') {
-                return DB::table('jobs')->where('job_type_id', '=', $value)->where('is_active', '=', 1)->where('expiry_date', '>',  \Carbon\Carbon::now())->count('id');
+                return DB::table('jobs')->where('job_type_id', '=', $value)->where('is_active', '=', 1)->where('is_expired', '=', 0)->count('id');
             }
             if ($field == 'job_shift_id') {
-                return DB::table('jobs')->where('job_shift_id', '=', $value)->where('is_active', '=', 1)->where('expiry_date', '>',  \Carbon\Carbon::now())->count('id');
+                return DB::table('jobs')->where('job_shift_id', '=', $value)->where('is_active', '=', 1)->where('is_expired', '=', 0)->count('id');
             }
             if ($field == 'gender_id') {
-                return DB::table('jobs')->where('gender_id', '=', $value)->where('is_active', '=', 1)->where('expiry_date', '>',  \Carbon\Carbon::now())->count('id');
-            }
-            if ($field == 'degree_level_id') {
-                return DB::table('jobs')->where('degree_level_id', '=', $value)->where('is_active', '=', 1)->where('expiry_date', '>',  \Carbon\Carbon::now())->count('id');
+                return DB::table('jobs')->where('gender_id', '=', $value)->where('is_active', '=', 1)->where('is_expired', '=', 0)->count('id');
             }
             if ($field == 'job_experience_id') {
-                return DB::table('jobs')->where('job_experience_id', '=', $value)->where('is_active', '=', 1)->where('expiry_date', '>',  \Carbon\Carbon::now())->count('id');
+                return DB::table('jobs')->where('job_experience_id', '=', $value)->where('is_active', '=', 1)->where('is_expired', '=', 0)->count('id');
             }
             if ($field == 'country_id') {
-                return DB::table('jobs')->where('country_id', '=', $value)->where('is_active', '=', 1)->where('expiry_date', '>',  \Carbon\Carbon::now())->count('id');
+                return DB::table('jobs')->where('country_id', '=', $value)->where('is_active', '=', 1)->where('is_expired', '=', 0)->count('id');
             }
             if ($field == 'state_id') {
-                return DB::table('jobs')->where('state_id', '=', $value)->where('is_active', '=', 1)->where('expiry_date', '>',  \Carbon\Carbon::now())->count('id');
+                return DB::table('jobs')->where('state_id', '=', $value)->where('is_active', '=', 1)->where('is_expired', '=', 0)->count('id');
             }
             if ($field == 'city_id') {
-                return DB::table('jobs')->where('city_id', '=', $value)->where('is_active', '=', 1)->where('expiry_date', '>',  \Carbon\Carbon::now())->count('id');
+                return DB::table('jobs')->where('city_id', '=', $value)->where('is_active', '=', 1)->where('is_expired', '=', 0)->count('id');
             }
         }
     }
@@ -775,7 +756,7 @@ trait JobTrait
 
     {
 
-        return $query->whereDate('expiry_date', '>', Carbon::now()); //where('expiry_date', '>=', date('Y-m-d'));
+        return $query->where('is_expired', 0); // Jobs are active by default unless manually expired
 
     }
 
@@ -785,7 +766,7 @@ trait JobTrait
 
     {
 
-        return ($this->expiry_date < Carbon::now())? true:false;
+        return ($this->is_expired == 1)? true:false;
 
     }
 

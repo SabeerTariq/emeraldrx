@@ -91,16 +91,16 @@
         {!! Form::number('salary_to', null, array('class'=>'form-control', 'id'=>'salary_to')) !!}
         {!! APFrmErrHelp::showErrors($errors, 'salary_to') !!}                                       
     </div>
-    <div class="form-group {!! APFrmErrHelp::hasError($errors, 'salary_currency') !!}" id="salary_currency_div">
-        {!! Form::label('salary_currency', 'Salary Currency', ['class' => 'bold']) !!}                    
-        {!! Form::select('salary_currency', ['' => 'Select Salary Currency']+$currencies, null, array('class'=>'form-control', 'id'=>'salary_currency')) !!}
-        {!! APFrmErrHelp::showErrors($errors, 'salary_currency') !!}                                       
-    </div>
-    <div class="form-group {!! APFrmErrHelp::hasError($errors, 'salary_period_id') !!}" id="salary_period_id_div">
-        {!! Form::label('salary_period_id', 'Salary Period', ['class' => 'bold']) !!}                    
-        {!! Form::select('salary_period_id', ['' => 'Select Salary Period']+$salaryPeriods, null, array('class'=>'form-control', 'id'=>'salary_period_id')) !!}
-        {!! APFrmErrHelp::showErrors($errors, 'salary_period_id') !!}                                       
-    </div>
+    {{-- Currency field hidden, default to "$" --}}
+    @php
+    $salary_currency_value = (isset($job) && $job->salary_currency) ? $job->salary_currency : '$';
+    @endphp
+    {!! Form::hidden('salary_currency', $salary_currency_value) !!}
+    {{-- Period field hidden, default to monthly (1) --}}
+    @php
+    $salary_period_value = (isset($job) && $job->salary_period_id) ? $job->salary_period_id : 1;
+    @endphp
+    {!! Form::hidden('salary_period_id', $salary_period_value) !!}
     <div class="form-group {!! APFrmErrHelp::hasError($errors, 'hide_salary') !!}">
         {!! Form::label('hide_salary', 'Hide Salary?', ['class' => 'bold']) !!}
         <div class="radio-list">
@@ -121,19 +121,14 @@
         </div>
         {!! APFrmErrHelp::showErrors($errors, 'hide_salary') !!}
     </div>
-    <div class="form-group {!! APFrmErrHelp::hasError($errors, 'functional_area_id') !!}" id="functional_area_id_div">
-        {!! Form::label('functional_area_id', 'Functional Area', ['class' => 'bold']) !!}                    
-        {!! Form::select('functional_area_id', ['' => 'Select Functional Area']+$functionalAreas, null, array('class'=>'form-control', 'id'=>'functional_area_id')) !!}
-        {!! APFrmErrHelp::showErrors($errors, 'functional_area_id') !!}                                       
-    </div>
     <div class="form-group {!! APFrmErrHelp::hasError($errors, 'job_type_id') !!}" id="job_type_id_div">
         {!! Form::label('job_type_id', 'Job Type', ['class' => 'bold']) !!}                    
-        {!! Form::select('job_type_id', ['' => 'Select Job Type']+$jobTypes, null, array('class'=>'form-control', 'id'=>'job_type_id')) !!}
+        {!! Form::text('job_type_id', (isset($job)) ? $job->job_type_id : null, array('class'=>'form-control', 'id'=>'job_type_id', 'placeholder'=>'Enter Job Type')) !!}
         {!! APFrmErrHelp::showErrors($errors, 'job_type_id') !!}                                       
     </div>
     <div class="form-group {!! APFrmErrHelp::hasError($errors, 'job_shift_id') !!}" id="job_shift_id_div">
         {!! Form::label('job_shift_id', 'Job Shift', ['class' => 'bold']) !!}                    
-        {!! Form::select('job_shift_id', ['' => 'Select Job Shift']+$jobShifts, null, array('class'=>'form-control', 'id'=>'job_shift_id')) !!}
+        {!! Form::text('job_shift_id', (isset($job)) ? $job->job_shift_id : null, array('class'=>'form-control', 'id'=>'job_shift_id', 'placeholder'=>'Enter Job Shift')) !!}
         {!! APFrmErrHelp::showErrors($errors, 'job_shift_id') !!}                                       
     </div>
     <div class="form-group {!! APFrmErrHelp::hasError($errors, 'num_of_positions') !!}" id="num_of_positions_div">
@@ -145,16 +140,6 @@
         {!! Form::label('gender_id', 'Gender', ['class' => 'bold']) !!}                    
         {!! Form::select('gender_id', ['' => __('No preference')]+$genders, null, array('class'=>'form-control', 'id'=>'gender_id')) !!}
         {!! APFrmErrHelp::showErrors($errors, 'gender_id') !!}                                       
-    </div>
-    <div class="form-group {!! APFrmErrHelp::hasError($errors, 'expiry_date') !!}">
-        {!! Form::label('expiry_date', 'Job expiry date', ['class' => 'bold']) !!}
-        {!! Form::text('expiry_date', null, array('class'=>'form-control datepicker', 'id'=>'expiry_date', 'placeholder'=>'Job expiry date', 'autocomplete'=>'off')) !!}
-        {!! APFrmErrHelp::showErrors($errors, 'expiry_date') !!}
-    </div>
-    <div class="form-group {!! APFrmErrHelp::hasError($errors, 'degree_level_id') !!}" id="degree_level_id_div">
-        {!! Form::label('degree_level_id', 'Required Degree Level', ['class' => 'bold']) !!}                    
-        {!! Form::select('degree_level_id', ['' => 'Select Required Degree Level']+$degreeLevels, null, array('class'=>'form-control', 'id'=>'degree_level_id')) !!}
-        {!! APFrmErrHelp::showErrors($errors, 'degree_level_id') !!}                                       
     </div>
     <div class="form-group {!! APFrmErrHelp::hasError($errors, 'job_experience_id') !!}" id="job_experience_id_div">
         {!! Form::label('job_experience_id', 'Required job experience', ['class' => 'bold']) !!}                    
@@ -244,11 +229,6 @@
     </div>
 </div>
 @push('css')
-<style type="text/css">
-    .datepicker>div {
-        display: block;
-    }
-</style>
 @endpush
 @push('scripts')
 @include('admin.shared.tinyMCEFront') 
@@ -275,11 +255,6 @@
         $('.select2-multiple').select2({
             placeholder: "Select Required Skills",
             allowClear: true
-        });
-        $(".datepicker").datepicker({
-            autoclose: true,
-            startDate: new Date(),
-            format: 'yyyy-m-d'
         });
         $('#country_id').on('change', function (e) {
             e.preventDefault();

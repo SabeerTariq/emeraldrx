@@ -42,18 +42,18 @@ $isDashboardPage = (Auth::check() || Auth::guard('company')->check());
                                             $company = $job->getCompany(); 
                                             $appliedUsersCount = $job->appliedUsers->count();
                                         @endphp
-                                        @if(null !== $company && $job->expiry_date >= now())
+                                        @if(null !== $company && $job->is_expired == 0)
 
                                         <li class="col-lg-6 col-md-6" id="job_li_{{$job->id}}">
                                             <div class="jobint">
 
                                                 <div class="d-flex">
-                                                    <div class="fticon"><i class="fas fa-briefcase"></i> {{$job->getJobType('job_type')}}</div>                        
+                                                    <div class="fticon"><i class="fas fa-briefcase"></i> {{$job->job_type_id ? $job->job_type_id : 'N/A'}}</div>                        
                                                 </div>
                                                 <h4><a href="{{route('job.detail', [$job->slug])}}" title="{{$job->title}}">{!! \Illuminate\Support\Str::limit($job->title, $limit = 20, $end = '...') !!}</a>
                                                 </h4>
                                                 @if(!(bool)$job->hide_salary)                    
-                                                <div class="salary mb-2">Salary: <strong>{{$job->salary_currency.''.$job->salary_from}} - {{$job->salary_currency.''.$job->salary_to}}/{{$job->getSalaryPeriod('salary_period')}}</strong></div>
+                                                <div class="salary mb-2">Salary: <strong>{{$job->salary_currency ? $job->salary_currency : ''}} {{$job->salary_from}} - {{$job->salary_currency ? $job->salary_currency : ''}} {{$job->salary_to}}</strong></div>
                                                 @endif 
                                                 <strong><i class="fas fa-map-marker-alt"></i> {{$job->getCity('city')}}</strong>    
                                                 <span>{{$job->created_at->format('M d, Y')}}</span>
@@ -66,6 +66,7 @@ $isDashboardPage = (Auth::check() || Auth::guard('company')->check());
                                                         @endif
                                                     </a>
                                                     <a class="btn btn-warning me-2" href="{{route('edit.front.job', [$job->id])}}"><i class="fas fa-edit"></i></a>
+                                                    <a class="btn btn-secondary me-2" href="javascript:;" onclick="expireJob({{$job->id}});" title="{{__('Expire Job')}}"><i class="fas fa-ban"></i></a>
                                                     <a class="btn btn-danger me-2" href="javascript:;" onclick="deleteJob({{$job->id}});"><i class="fas fa-trash"></i></a>                                    
                                                 </div>
                                             </div>
@@ -89,18 +90,18 @@ $isDashboardPage = (Auth::check() || Auth::guard('company')->check());
                                             $company = $job->getCompany(); 
                                             $appliedUsersCount = $job->appliedUsers->count();
                                         @endphp
-                                        @if(null !== $company && $job->expiry_date < now())
+                                        @if(null !== $company && $job->is_expired == 1)
                                            
                                             <li class="col-lg-6 col-md-6" id="job_li_{{$job->id}}">
                                             <div class="jobint">
 
                                                 <div class="d-flex">
-                                                    <div class="fticon"><i class="fas fa-briefcase"></i> {{$job->getJobType('job_type')}}</div>                        
+                                                    <div class="fticon"><i class="fas fa-briefcase"></i> {{$job->job_type_id ? $job->job_type_id : 'N/A'}}</div>                        
                                                 </div>
                                                 <h4><a href="{{route('job.detail', [$job->slug])}}" title="{{$job->title}}">{!! \Illuminate\Support\Str::limit($job->title, $limit = 20, $end = '...') !!}</a>
                                                 </h4>
                                                 @if(!(bool)$job->hide_salary)                    
-                                                <div class="salary mb-2">Salary: <strong>{{$job->salary_currency.''.$job->salary_from}} - {{$job->salary_currency.''.$job->salary_to}}/{{$job->getSalaryPeriod('salary_period')}}</strong></div>
+                                                <div class="salary mb-2">Salary: <strong>{{$job->salary_currency ? $job->salary_currency : ''}} {{$job->salary_from}} - {{$job->salary_currency ? $job->salary_currency : ''}} {{$job->salary_to}}</strong></div>
                                                 @endif 
                                                 <strong><i class="fas fa-map-marker-alt"></i> {{$job->getCity('city')}}</strong>    
                                                 <span>{{$job->created_at->format('M d, Y')}}</span>
@@ -113,6 +114,7 @@ $isDashboardPage = (Auth::check() || Auth::guard('company')->check());
                                                                 @endif
                                                             </a>
                                                             <a class="btn btn-warning me-2" href="{{route('edit.front.job', [$job->id])}}">Repost</a>
+                                                            <a class="btn btn-success me-2" href="javascript:;" onclick="unexpireJob({{$job->id}});" title="{{__('Activate Job')}}"><i class="fas fa-check"></i></a>
                                                             <a class="btn btn-danger me-2" href="javascript:;" onclick="deleteJob({{$job->id}});"><i class="fas fa-trash"></i></a>                                       
                                                 </div>
                                             </div>
@@ -170,6 +172,34 @@ $isDashboardPage = (Auth::check() || Auth::guard('company')->check());
                 .done(function (response) {
                     if (response == 'ok') {
                         $('#job_li_' + id).remove();
+                    } else {
+                        alert('Request Failed!');
+                    }
+                });
+        }
+    }
+
+    function expireJob(id) {
+        var msg = 'Are you sure you want to expire this job?';
+        if (confirm(msg)) {
+            $.post("{{ route('expire.job') }}", {id: id, _token: '{{ csrf_token() }}'})
+                .done(function (response) {
+                    if (response == 'ok') {
+                        location.reload();
+                    } else {
+                        alert('Request Failed!');
+                    }
+                });
+        }
+    }
+
+    function unexpireJob(id) {
+        var msg = 'Are you sure you want to activate this job?';
+        if (confirm(msg)) {
+            $.post("{{ route('unexpire.job') }}", {id: id, _token: '{{ csrf_token() }}'})
+                .done(function (response) {
+                    if (response == 'ok') {
+                        location.reload();
                     } else {
                         alert('Request Failed!');
                     }

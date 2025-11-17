@@ -37,9 +37,6 @@ $isDashboardPage = (Auth::check() || Auth::guard('company')->check());
                                 <div class="col-md-4">
                                     <input type="text" name="search" id="jbsearch" value="{{Request::get('search', '')}}" class="form-control" placeholder="{{__('Enter Skills or job title')}}" autocomplete="off" />
                                 </div>
-                                <div class="col-md-3">
-                                    {!! Form::select('functional_area_id[]', ['' => __('Select Functional Area')]+$functionalAreas, Request::get('functional_area_id', null), array('class'=>'form-control', 'id'=>'functional_area_id')) !!}
-                                </div>
                                 <div class="col-md-2">
                                     {!! Form::select('country_id[]', ['' => __('Select Country')]+$countries, Request::get('country_id', null), array('class'=>'form-control', 'id'=>'country_id')) !!}
                                 </div>
@@ -59,13 +56,7 @@ $isDashboardPage = (Auth::check() || Auth::guard('company')->check());
                                     </span>
                                 </div>
                                 <div class="col-md-3">
-                                    {!! Form::select('job_type_id[]', ['' => __('Select Job Type')]+$jobTypes, Request::get('job_type_id', null), array('class'=>'form-control', 'id'=>'job_type_id')) !!}
-                                </div>
-                                <div class="col-md-3">
                                     {!! Form::select('job_experience_id[]', ['' => __('Select Experience')]+$jobExperiences, Request::get('job_experience_id', null), array('class'=>'form-control', 'id'=>'job_experience_id')) !!}
-                                </div>
-                                <div class="col-md-3">
-                                    {!! Form::select('salary_currency', ['' => __('Select Currency')]+$currencies, Request::get('salary_currency', ''), array('class'=>'form-control', 'id'=>'salary_currency')) !!}
                                 </div>
                             </div>
                             <div class="row mt-2">
@@ -171,7 +162,7 @@ $isDashboardPage = (Auth::check() || Auth::guard('company')->check());
 
 
                     <div class="d-flex">
-                        <div class="fticon"><i class="fas fa-briefcase"></i> {{$job->getJobType('job_type')}}</div>                        
+                        <div class="fticon"><i class="fas fa-briefcase"></i> {{$job->job_type_id ? $job->job_type_id : 'N/A'}}</div>                        
                     </div>
 
                     <h4><a href="{{route('job.detail', [$job->slug])}}" title="{{$job->title}}">{!! \Illuminate\Support\Str::limit($job->title, $limit = 20, $end = '...') !!}</a>
@@ -179,7 +170,7 @@ $isDashboardPage = (Auth::check() || Auth::guard('company')->check());
                     
                 </h4>
                 @if(!(bool)$job->hide_salary)                    
-                    <div class="salary mb-2">Salary: <strong>{{$job->salary_currency.''.$job->salary_from}} - {{$job->salary_currency.''.$job->salary_to}}/{{$job->getSalaryPeriod('salary_period')}}</strong></div>
+                    <div class="salary mb-2">Salary: <strong>{{$job->salary_currency ? $job->salary_currency : ''}} {{$job->salary_from}} - {{$job->salary_currency ? $job->salary_currency : ''}} {{$job->salary_to}}</strong></div>
                     @endif 
 
 

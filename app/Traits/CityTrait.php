@@ -15,7 +15,7 @@ trait CityTrait
     {
         return DB::table('jobs')
                         ->select('city_id', DB::raw('COUNT(jobs.city_id) AS num_jobs'))
-						->where('expiry_date', '>' ,Carbon::now())
+						->where('is_expired', '=', 0)
 						->where('is_active',1)
                         ->groupBy('city_id')
                         ->orderBy('num_jobs', 'DESC')

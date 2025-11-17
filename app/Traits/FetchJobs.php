@@ -36,13 +36,11 @@ trait FetchJobs
         'jobs.salary_from',
         'jobs.salary_to',
         'jobs.hide_salary',
-        'jobs.functional_area_id',
         'jobs.job_type_id',
         'jobs.job_shift_id',
         'jobs.num_of_positions',
         'jobs.gender_id',
-        'jobs.expiry_date',
-        'jobs.degree_level_id',
+        'jobs.is_expired',
         'jobs.job_experience_id',
         'jobs.is_active',
         'jobs.is_featured',
@@ -123,9 +121,7 @@ trait FetchJobs
             //$job_ids = JobSkillManager::whereIn('job_skill_id',$job_skill_ids)->pluck('job_id')->toArray();
             //$query->whereIn('jobs.id', $job_ids);
         }
-        if (isset($functional_area_ids[0])) {
-            $query->whereIn('jobs.functional_area_id', $functional_area_ids);
-        }
+        // functional_area_id field has been removed
         if (isset($country_ids[0])) {
             $query->whereIn('jobs.country_id', $country_ids);
         }
@@ -150,9 +146,7 @@ trait FetchJobs
         if (isset($gender_ids[0])) {
             $query->whereIn('jobs.gender_id', $gender_ids);
         }
-        if (isset($degree_level_ids[0])) {
-            $query->whereIn('jobs.degree_level_id', $degree_level_ids);
-        }
+        // degree_level_id field has been removed
         if (isset($job_experience_ids[0])) {
             $query->whereIn('jobs.job_experience_id', $job_experience_ids);
         }
@@ -170,11 +164,8 @@ trait FetchJobs
             $query->where('jobs.is_featured', '=', $is_featured);
         }
         
-        // Filter expired jobs: include jobs with NULL expiry_date or expiry_date in the future
-        $query->where(function($q) {
-            $q->whereNull('jobs.expiry_date')
-              ->orWhereDate('jobs.expiry_date', '>', \Carbon\Carbon::now());
-        });
+        // Filter expired jobs: only show jobs that are not manually expired
+        $query->where('jobs.is_expired', 0);
         
         return $query;
     }

@@ -16,6 +16,8 @@ Route::get('company-profile', 'Company\CompanyController@companyProfile')->name(
 Route::put('update-company-profile', 'Company\CompanyController@updateCompanyProfile')->name('update.company.profile');
 Route::put('upload-company-documents', 'Company\CompanyController@uploadDocuments')->name('update.company.upload_documents');
 Route::get('posted-jobs', 'Company\CompanyController@postedJobs')->name('posted.jobs');
+Route::post('expire-job', 'Company\CompanyController@expireJob')->name('expire.job');
+Route::post('unexpire-job', 'Company\CompanyController@unexpireJob')->name('unexpire.job');
 
 Route::get('featured-companies', 'Company\CompanyController@featuredcompanies')->name('company.featuredcompanies');
 Route::post('contact-company-message-send', 'Company\CompanyController@sendContactForm')->name('contact.company.message.send');

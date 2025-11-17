@@ -14,7 +14,7 @@ trait CountryTrait
     {
         return DB::table('jobs')
                         ->select('country_id', DB::raw('COUNT(jobs.country_id) AS num_jobs'))
-						->where('expiry_date', '>' ,Carbon::now())
+						->where('is_expired', '=', 0)
 						->where('is_active',1)
                         ->groupBy('country_id')
                         ->orderBy('num_jobs', 'DESC')

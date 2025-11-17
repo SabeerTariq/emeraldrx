@@ -871,6 +871,34 @@ public function downloadReceipt($companyId)
 
     }
 
+    public function expireJob(Request $request)
+
+    {
+
+        $job = Auth::guard('company')->user()->jobs()->findOrFail($request->input('id'));
+
+        $job->is_expired = 1;
+
+        $job->save();
+
+        return 'ok';
+
+    }
+
+    public function unexpireJob(Request $request)
+
+    {
+
+        $job = Auth::guard('company')->user()->jobs()->findOrFail($request->input('id'));
+
+        $job->is_expired = 0;
+
+        $job->save();
+
+        return 'ok';
+
+    }
+
 
 
     public function listAppliedUsers(Request $request, $job_id)

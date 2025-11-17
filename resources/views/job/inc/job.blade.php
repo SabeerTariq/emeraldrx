@@ -53,20 +53,17 @@
             {!! Form::number('salary_to', null, array('class'=>'form-control', 'id'=>'salary_to', 'placeholder'=>__('Salary to'))) !!}
             {!! APFrmErrHelp::showErrors($errors, 'salary_to') !!} </div>
     </div>
-    <div class="col-md-4">
-        <div class="formrow {!! APFrmErrHelp::hasError($errors, 'salary_currency') !!}" id="salary_currency_div">
-            @php
-            $salary_currency = Request::get('salary_currency', (isset($job))? $job->salary_currency:$siteSetting->default_currency_code);
-            @endphp
-
-            {!! Form::select('salary_currency', ['' => __('Select Salary Currency')]+$currencies, $salary_currency, array('class'=>'form-control', 'id'=>'salary_currency')) !!}
-            {!! APFrmErrHelp::showErrors($errors, 'salary_currency') !!} </div>
-    </div>
-    <div class="col-md-4">
-        <div class="formrow {!! APFrmErrHelp::hasError($errors, 'salary_period_id') !!}" id="salary_period_id_div"> {!! Form::select('salary_period_id', ['' => __('Select Salary Period')]+$salaryPeriods, null, array('class'=>'form-control', 'id'=>'salary_period_id')) !!}
-            {!! APFrmErrHelp::showErrors($errors, 'salary_period_id') !!} </div>
-    </div>
-    <div class="col-md-4">
+    {{-- Currency field hidden, default to "$" --}}
+    @php
+    $salary_currency_value = (isset($job) && $job->salary_currency) ? $job->salary_currency : '$';
+    @endphp
+    {!! Form::hidden('salary_currency', $salary_currency_value) !!}
+    {{-- Period field hidden, default to monthly (1) --}}
+    @php
+    $salary_period_value = (isset($job) && $job->salary_period_id) ? $job->salary_period_id : 1;
+    @endphp
+    {!! Form::hidden('salary_period_id', $salary_period_value) !!}
+    <div class="col-md-6">
         <div class="formrow {!! APFrmErrHelp::hasError($errors, 'hide_salary') !!}"> {!! Form::label('hide_salary', __('Hide Salary?'), ['class' => 'bold']) !!}
             <div class="radio-list">
                 <?php
@@ -90,17 +87,16 @@
         <div class="formrow {!! APFrmErrHelp::hasError($errors, 'career_level_id') !!}" id="career_level_id_div"> {!! Form::select('career_level_id', ['' => __('Select Career level')]+$careerLevels, null, array('class'=>'form-control', 'id'=>'career_level_id')) !!}
             {!! APFrmErrHelp::showErrors($errors, 'career_level_id') !!} </div>
     </div>
-
     <div class="col-md-6">
-        <div class="formrow {!! APFrmErrHelp::hasError($errors, 'functional_area_id') !!}" id="functional_area_id_div"> {!! Form::select('functional_area_id', ['' => __('Select Functional Area')]+$functionalAreas, null, array('class'=>'form-control', 'id'=>'functional_area_id')) !!}
-            {!! APFrmErrHelp::showErrors($errors, 'functional_area_id') !!} </div>
-    </div>
-    <div class="col-md-6">
-        <div class="formrow {!! APFrmErrHelp::hasError($errors, 'job_type_id') !!}" id="job_type_id_div"> {!! Form::select('job_type_id', ['' => __('Select Job Type')]+$jobTypes, null, array('class'=>'form-control', 'id'=>'job_type_id')) !!}
+        <div class="formrow {!! APFrmErrHelp::hasError($errors, 'job_type_id') !!}" id="job_type_id_div"> 
+            <label for="job_type_id">{{__('Job Type')}}</label>
+            {!! Form::text('job_type_id', (isset($job)) ? $job->job_type_id : null, array('class'=>'form-control', 'id'=>'job_type_id', 'placeholder'=>__('Enter Job Type'))) !!}
             {!! APFrmErrHelp::showErrors($errors, 'job_type_id') !!} </div>
     </div>
     <div class="col-md-6">
-        <div class="formrow {!! APFrmErrHelp::hasError($errors, 'job_shift_id') !!}" id="job_shift_id_div"> {!! Form::select('job_shift_id', ['' => __('Select Job Shift')]+$jobShifts, null, array('class'=>'form-control', 'id'=>'job_shift_id')) !!}
+        <div class="formrow {!! APFrmErrHelp::hasError($errors, 'job_shift_id') !!}" id="job_shift_id_div"> 
+            <label for="job_shift_id">{{__('Job Shift')}}</label>
+            {!! Form::text('job_shift_id', (isset($job)) ? $job->job_shift_id : null, array('class'=>'form-control', 'id'=>'job_shift_id', 'placeholder'=>__('Enter Job Shift'))) !!}
             {!! APFrmErrHelp::showErrors($errors, 'job_shift_id') !!} </div>
     </div>
     <div class="col-md-6">
@@ -110,14 +106,6 @@
     <div class="col-md-6">
         <div class="formrow {!! APFrmErrHelp::hasError($errors, 'gender_id') !!}" id="gender_id_div"> {!! Form::select('gender_id', ['' => __('No preference')]+$genders, null, array('class'=>'form-control', 'id'=>'gender_id')) !!}
             {!! APFrmErrHelp::showErrors($errors, 'gender_id') !!} </div>
-    </div>
-    <div class="col-md-6">
-        <div class="formrow {!! APFrmErrHelp::hasError($errors, 'expiry_date') !!}"> {!! Form::text('expiry_date', null, array('class'=>'form-control datepicker', 'id'=>'expiry_date', 'placeholder'=>__('Job expiry date'), 'autocomplete'=>'off')) !!}
-            {!! APFrmErrHelp::showErrors($errors, 'expiry_date') !!} </div>
-    </div>
-    <div class="col-md-6">
-        <div class="formrow {!! APFrmErrHelp::hasError($errors, 'degree_level_id') !!}" id="degree_level_id_div"> {!! Form::select('degree_level_id', ['' =>__('Select Required Degree Level')]+$degreeLevels, null, array('class'=>'form-control', 'id'=>'degree_level_id')) !!}
-            {!! APFrmErrHelp::showErrors($errors, 'degree_level_id') !!} </div>
     </div>
     <div class="col-md-6">
         <div class="formrow {!! APFrmErrHelp::hasError($errors, 'job_experience_id') !!}" id="job_experience_id_div"> {!! Form::select('job_experience_id', ['' => __('Select Required job experience')]+$jobExperiences, null, array('class'=>'form-control', 'id'=>'job_experience_id')) !!}
@@ -167,11 +155,6 @@
 {!! Form::close() !!}
 <hr>
 @push('styles')
-<style type="text/css">
-    .datepicker>div {
-        display: block;
-    }
-</style>
 @endpush
 @push('scripts')
 @include('includes.tinyMCEFront')
@@ -180,11 +163,6 @@
         $('.select2-multiple').select2({
             placeholder: "{{__('Select Required Skills')}}",
             allowClear: true
-        });
-        $(".datepicker").datepicker({
-            autoclose: true,
-            startDate: new Date(),
-            format: 'yyyy-m-d'
         });
         $('#country_id').on('change', function (e) {
             e.preventDefault();

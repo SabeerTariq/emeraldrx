@@ -38,16 +38,14 @@ $company = $job->getCompany();
                         <div class="desi"><i class="fa fa-map-marker" aria-hidden="true"></i> @if((bool)$job->is_freelance) {{__('Freelance')}} @else {{$job->getLocation()}} @endif</div>
                         <div class="membersinc"><i class="far fa-calendar" aria-hidden="true"></i> {{__('Date Posted')}}: {{$job->created_at->format('M d, Y')}}</div>
                         @if(!(bool)$job->hide_salary)
-                        <div class="membersinc" style="color: #27bcbb; font-weight: 600;"><i class="fas fa-dollar-sign" aria-hidden="true"></i> {{$job->getSalaryPeriod('salary_period')}}: {{$job->salary_currency.' '.number_format($job->salary_from)}} - {{$job->salary_currency.' '.number_format($job->salary_to)}}</div>
+                        <div class="membersinc" style="color: #27bcbb; font-weight: 600;"><i class="fas fa-dollar-sign" aria-hidden="true"></i> {{$job->salary_currency ? $job->salary_currency : ''}} {{number_format($job->salary_from)}} - {{$job->salary_currency ? $job->salary_currency : ''}} {{number_format($job->salary_to)}}</div>
                         @endif
                     </div>
                 </div>
 
                 <!-- Action Buttons -->
                 <div class="userlinkstp">  
-                    @if($job->isJobExpired())
-                        <button class="btn" disabled style="background: #999; cursor: not-allowed;"><i class="fas fa-exclamation-circle"></i> {{__('Job is expired')}}</button>
-                    @elseif(Auth::check() && Auth::user()->isAppliedOnJob($job->id))
+                    @if(Auth::check() && Auth::user()->isAppliedOnJob($job->id))
                         <button class="btn" disabled style="background: #28a745; cursor: not-allowed;"><i class="fas fa-check-circle"></i> {{__('Already Applied')}}</button>
                     @else
                         @if(!Auth::check())
@@ -103,7 +101,7 @@ $company = $job->getCompany();
                             <div class="detail-icon" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: #e8f4f8; border-radius: 10px; color: #27bcbb; font-size: 20px; flex-shrink: 0;"><i class="fas fa-briefcase"></i></div>
                             <div class="detail-content" style="flex: 1;">
                                 <span class="detail-label" style="font-size: 12px; color: #777; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; display: block; margin-bottom: 5px;">{{__('Job Type')}}</span>
-                                <span class="detail-value" style="font-size: 15px; color: #333; font-weight: 600;">{{$job->getJobType('job_type')}}</span>
+                                <span class="detail-value" style="font-size: 15px; color: #333; font-weight: 600;">{{$job->job_type_id ? $job->job_type_id : 'N/A'}}</span>
                             </div>
                         </div>
                         
@@ -111,7 +109,7 @@ $company = $job->getCompany();
                             <div class="detail-icon" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: #e8f4f8; border-radius: 10px; color: #27bcbb; font-size: 20px; flex-shrink: 0;"><i class="fas fa-clock"></i></div>
                             <div class="detail-content" style="flex: 1;">
                                 <span class="detail-label" style="font-size: 12px; color: #777; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; display: block; margin-bottom: 5px;">{{__('Shift')}}</span>
-                                <span class="detail-value" style="font-size: 15px; color: #333; font-weight: 600;">{{$job->getJobShift('job_shift')}}</span>
+                                <span class="detail-value" style="font-size: 15px; color: #333; font-weight: 600;">{{$job->job_shift_id ? $job->job_shift_id : 'N/A'}}</span>
                             </div>
                         </div>
                         
@@ -147,21 +145,6 @@ $company = $job->getCompany();
                             </div>
                         </div>
                         
-                        <div class="job-detail-item" style="display: flex; align-items: flex-start; gap: 15px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
-                            <div class="detail-icon" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: #e8f4f8; border-radius: 10px; color: #27bcbb; font-size: 20px; flex-shrink: 0;"><i class="fas fa-graduation-cap"></i></div>
-                            <div class="detail-content" style="flex: 1;">
-                                <span class="detail-label" style="font-size: 12px; color: #777; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; display: block; margin-bottom: 5px;">{{__('Degree')}}</span>
-                                <span class="detail-value" style="font-size: 15px; color: #333; font-weight: 600;">{{$job->getDegreeLevel('degree_level')}}</span>
-                            </div>
-                        </div>
-                        
-                        <div class="job-detail-item" style="display: flex; align-items: flex-start; gap: 15px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
-                            <div class="detail-icon" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: #e8f4f8; border-radius: 10px; color: #27bcbb; font-size: 20px; flex-shrink: 0;"><i class="far fa-calendar-check"></i></div>
-                            <div class="detail-content" style="flex: 1;">
-                                <span class="detail-label" style="font-size: 12px; color: #777; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; display: block; margin-bottom: 5px;">{{__('Apply Before')}}</span>
-                                <span class="detail-value" style="font-size: 15px; color: #333; font-weight: 600;">{{ \Carbon\Carbon::parse($job->expiry_date)->format('M d, Y') }}</span>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 
